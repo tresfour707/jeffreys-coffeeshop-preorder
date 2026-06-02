@@ -34,7 +34,7 @@ function SearchIcon() {
     <svg
       aria-hidden="true"
       viewBox="0 0 24 24"
-      className="h-5 w-5 text-stone-400"
+      className="h-5 w-5 text-brand-600"
       fill="none"
       stroke="currentColor"
       strokeLinecap="round"
@@ -72,9 +72,9 @@ function getOrderStatusTone(status: UserOrderSummary["status"]) {
       };
     case "WAITING":
       return {
-        dotClassName: "bg-[#c9a378]",
-        textClassName: "text-[#8a613a]",
-        chipClassName: "bg-[#f4e5d2] text-[#8a613a]",
+        dotClassName: "bg-brand-600",
+        textClassName: "text-brand-700",
+        chipClassName: "bg-brand-50 text-brand-700",
       };
     case "CANCELLED":
       return {
@@ -86,7 +86,7 @@ function getOrderStatusTone(status: UserOrderSummary["status"]) {
       return {
         dotClassName: "bg-stone-400",
         textClassName: "text-stone-500",
-        chipClassName: "bg-[#f8f2ec] text-stone-600",
+        chipClassName: "bg-jeffreys-fog text-stone-600",
       };
   }
 }
@@ -153,9 +153,9 @@ function ActiveOrderTracker({
     <section className="mb-3 px-1">
       <Link
         href={href}
-        className="group flex min-h-[70px] items-center gap-4 rounded-full bg-[rgba(255,255,255,0.58)] px-5 py-3 text-stone-950 no-underline shadow-[0_14px_30px_rgba(31,23,18,0.065)] backdrop-blur-[22px] transition active:scale-[0.99]"
+        className="group flex min-h-[68px] items-center gap-4 rounded-[20px] border border-black/[0.055] bg-white/86 px-4 py-3 text-stone-950 no-underline shadow-[0_14px_30px_rgba(0,0,0,0.055)] backdrop-blur-[22px] transition active:scale-[0.99]"
       >
-        <span className="shrink-0 text-[23px] font-semibold leading-none tracking-tight text-stone-950">
+        <span className="shrink-0 text-[22px] font-semibold leading-none tracking-tight text-jeffreys-graphite">
           {formatOrderNumber(primaryOrder.publicOrderNumber)}
         </span>
 
@@ -177,8 +177,8 @@ function ActiveOrderTracker({
 
         <span
           className={cn(
-            "inline-flex shrink-0 rounded-full px-3 py-1.5 text-[13px] font-medium leading-none",
-            hasMultipleOrders ? "bg-[#f5eee8] text-stone-700" : statusTone.chipClassName,
+            "inline-flex shrink-0 rounded-full px-3 py-1.5 text-[13px] font-semibold leading-none",
+            hasMultipleOrders ? "bg-jeffreys-fog text-jeffreys-graphite" : statusTone.chipClassName,
           )}
         >
           {hasMultipleOrders ? getActiveOrdersLabel(sortedOrders.length) : "Открыть"}
@@ -227,29 +227,29 @@ export function MenuClient({
       viewer={viewer}
       queueSummary={initialQueueSummary}
       queueHeadline={queueHeadline}
-      queueClassName="mt-0 pb-7 pt-1"
+      queueClassName="mt-0 pb-8 pt-1"
       contentClassName="mt-0"
       className="pb-28 pt-0"
       header={<ActiveOrderTracker orders={trackableOrders} />}
     >
       {purchasedProducts.length > 0 ? (
-        <section className="mb-14">
+        <section className="mb-16">
           <div className="mb-3 flex items-center justify-between gap-3">
-            <h2 className="text-[28px] font-medium leading-none tracking-tight text-stone-950">
+            <h2 className="text-[27px] font-semibold leading-none tracking-tight text-jeffreys-graphite">
               Вы покупали
             </h2>
 
             <Link
               href="/menu/purchased"
-              className="inline-flex h-10 items-center gap-1.5 rounded-full bg-[rgba(255,255,255,0.72)] px-4 text-sm font-semibold text-stone-800 shadow-[0_12px_26px_rgba(31,23,18,0.08)] backdrop-blur-[22px] transition active:scale-[0.97]"
+              className="inline-flex h-10 items-center gap-1.5 rounded-[14px] border border-black/[0.055] bg-white/86 px-4 text-sm font-semibold text-jeffreys-graphite shadow-[0_12px_24px_rgba(0,0,0,0.055)] backdrop-blur-[22px] transition active:scale-[0.97]"
             >
               Все
-              <span className="text-[22px] font-light leading-none">›</span>
+              <span className="text-[21px] font-light leading-none text-brand-600">›</span>
             </Link>
           </div>
 
           <div className="-mx-4 overflow-x-auto px-4 pb-1">
-            <div className="flex items-stretch gap-3">
+            <div className="flex items-stretch gap-3.5">
               {purchasedProducts.map((product) => (
                 <ProductGridCard
                   key={product.id}
@@ -257,7 +257,7 @@ export function MenuClient({
                   onOpen={setActiveProduct}
                   stableLayout
                   compact
-                  className="w-[146px] shrink-0"
+                  className="w-[140px] shrink-0"
                 />
               ))}
             </div>
@@ -268,21 +268,24 @@ export function MenuClient({
       <section id="quick-search" className="mb-5 scroll-mt-[112px]">
         <Link
           href="/menu/search"
-          className="flex min-h-[62px] items-center gap-4 rounded-[22px] border border-white/70 bg-[rgba(255,255,255,0.72)] px-5 text-[19px] font-medium tracking-tight text-stone-500 shadow-[0_16px_34px_rgba(31,23,18,0.08)] backdrop-blur-[22px] transition active:scale-[0.99]"
+          className="group flex min-h-[62px] items-center gap-4 rounded-[18px] border border-black/[0.055] bg-white/88 px-5 text-[19px] font-medium tracking-tight text-stone-500 shadow-[0_16px_34px_rgba(0,0,0,0.06)] backdrop-blur-[22px] transition active:scale-[0.99]"
           aria-label="Открыть быстрый поиск"
         >
-          <SearchIcon />
+          <span className="flex h-9 w-9 items-center justify-center rounded-[12px] bg-brand-50 transition group-active:bg-brand-100">
+            <SearchIcon />
+          </span>
           <span>Быстрый поиск</span>
         </Link>
       </section>
 
-      <section id="categories" className="grid grid-cols-2 gap-3">
+      <section id="categories" className="grid grid-cols-2 gap-3.5">
         {categoryEntries.map((entry) => (
           <Link
             key={entry.category}
             href={getMenuCategoryHref(entry.category)}
-            className="group relative min-h-[176px] overflow-hidden rounded-[24px] bg-[#f3f2ee] shadow-[inset_0_1px_0_rgba(255,255,255,0.88)]"
+            className="group relative min-h-[172px] overflow-hidden rounded-[20px] border border-black/[0.055] bg-white shadow-[0_14px_30px_rgba(0,0,0,0.055)]"
           >
+            <div className="absolute inset-x-0 top-0 z-10 h-1 bg-brand-600" />
             <Image
               src={entry.definition.imageSrc}
               alt={entry.definition.imageAlt}
@@ -292,11 +295,14 @@ export function MenuClient({
               style={{ objectPosition: entry.definition.imagePosition }}
             />
 
-            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.03)_0%,rgba(255,255,255,0)_100%)]" />
+            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.72)_0%,rgba(255,255,255,0.16)_48%,rgba(255,255,255,0)_100%)]" />
 
             <div className="relative z-10 h-full p-4">
-              <p className="max-w-[136px] text-[17px] font-medium leading-[1.14] tracking-tight text-stone-950">
+              <p className="max-w-[136px] text-[17px] font-semibold leading-[1.12] tracking-tight text-jeffreys-graphite">
                 {entry.definition.label}
+              </p>
+              <p className="mt-1 max-w-[128px] text-[11px] font-bold uppercase leading-tight tracking-[0.14em] text-brand-600">
+                {entry.products.length} поз.
               </p>
             </div>
           </Link>
