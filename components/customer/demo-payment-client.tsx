@@ -72,9 +72,9 @@ export function DemoPaymentClient({
       viewer={viewer}
       className="pb-40"
       header={
-        <section className="customer-soft-card px-5 py-5">
-          <p className="kicker text-stone-400">Demo payment</p>
-          <h1 className="mt-3 text-[36px] font-semibold leading-[0.94] tracking-tight text-stone-950">
+        <section className="rounded-[22px] border border-black/[0.06] bg-white px-5 py-5 shadow-[0_16px_34px_rgba(0,0,0,0.06)]">
+          <p className="kicker text-brand-600">Demo payment</p>
+          <h1 className="mt-3 text-[36px] font-semibold leading-[0.94] tracking-tight text-jeffreys-graphite">
             Подтвердите оплату
           </h1>
           <p className="mt-3 text-sm leading-6 text-stone-600">
@@ -85,11 +85,11 @@ export function DemoPaymentClient({
       }
     >
       <div className="space-y-3">
-        <section className="customer-soft-card-strong px-5 py-5">
+        <section className="rounded-[22px] border border-black/[0.06] bg-white px-5 py-5 shadow-[0_16px_34px_rgba(0,0,0,0.055)]">
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="kicker text-stone-400">Плательщик</p>
-              <h2 className="mt-3 text-[30px] font-semibold leading-[0.95] tracking-tight text-stone-950">
+              <h2 className="mt-3 text-[30px] font-semibold leading-[0.95] tracking-tight text-jeffreys-graphite">
                 {payment.customerName ?? viewer.name}
               </h2>
               <p className="mt-2 text-sm text-stone-500">
@@ -97,8 +97,8 @@ export function DemoPaymentClient({
               </p>
             </div>
 
-            <div className="rounded-[24px] bg-stone-950 px-4 py-3 text-right text-white">
-              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-stone-300">
+            <div className="rounded-[16px] bg-brand-600 px-4 py-3 text-right text-white shadow-[0_12px_24px_rgba(213,31,54,0.18)]">
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/70">
                 Способ
               </p>
               <p className="mt-2 text-sm font-semibold">
@@ -108,9 +108,9 @@ export function DemoPaymentClient({
           </div>
         </section>
 
-        <section className="customer-soft-card-strong px-5 py-5">
+        <section className="rounded-[22px] border border-black/[0.06] bg-white px-5 py-5 shadow-[0_16px_34px_rgba(0,0,0,0.055)]">
           <p className="kicker text-stone-400">Сумма</p>
-          <h2 className="mt-3 text-[44px] font-semibold leading-none tracking-tight text-stone-950">
+          <h2 className="mt-3 text-[44px] font-semibold leading-none tracking-tight text-jeffreys-graphite">
             {formatMoney(payment.amount)}
           </h2>
           <p className="mt-3 text-sm leading-6 text-stone-600">
@@ -119,11 +119,11 @@ export function DemoPaymentClient({
           </p>
         </section>
 
-        <section className="customer-soft-card-strong px-5 py-5">
+        <section className="rounded-[22px] border border-black/[0.06] bg-white px-5 py-5 shadow-[0_16px_34px_rgba(0,0,0,0.055)]">
           <div className="flex items-end justify-between gap-4">
             <div>
               <p className="kicker text-stone-400">Состав заказа</p>
-              <h2 className="mt-3 text-[30px] font-semibold leading-[0.95] tracking-tight text-stone-950">
+              <h2 className="mt-3 text-[30px] font-semibold leading-[0.95] tracking-tight text-jeffreys-graphite">
                 Что оплачиваем
               </h2>
             </div>
@@ -132,17 +132,17 @@ export function DemoPaymentClient({
 
           <div className="mt-4 space-y-3">
             {payment.items.map((item) => (
-              <div key={item.id} className="rounded-[24px] bg-[#fbf5ef] px-4 py-3">
+              <div key={item.id} className="rounded-[16px] border border-black/[0.045] bg-jeffreys-fog px-4 py-3">
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <p className="text-sm font-semibold text-stone-900">
+                    <p className="text-sm font-semibold text-jeffreys-graphite">
                       {item.quantity} × {item.productName}
                     </p>
                     <p className="mt-1 text-sm text-stone-500">
                       {formatMoney(item.unitPrice)} за единицу
                     </p>
                   </div>
-                  <p className="text-sm font-semibold text-stone-900">
+                  <p className="text-sm font-bold text-jeffreys-graphite">
                     {formatMoney(item.subtotal)}
                   </p>
                 </div>
@@ -164,7 +164,7 @@ export function DemoPaymentClient({
             type="button"
             onClick={() => handleResolve("SUCCESS")}
             disabled={isSubmitting !== null}
-            className="w-full rounded-full bg-emerald-600 px-5 py-4 text-sm font-semibold text-white transition disabled:cursor-wait disabled:bg-emerald-300"
+            className="w-full rounded-[16px] bg-brand-600 px-5 py-4 text-sm font-bold text-white shadow-[0_14px_28px_rgba(213,31,54,0.18)] transition hover:bg-brand-700 disabled:cursor-wait disabled:bg-brand-200"
           >
             {isSubmitting === "SUCCESS" ? "Подтверждаем…" : "Успешная оплата"}
           </button>
@@ -173,7 +173,7 @@ export function DemoPaymentClient({
             type="button"
             onClick={() => handleResolve("FAIL")}
             disabled={isSubmitting !== null}
-            className="w-full rounded-full bg-red-600 px-5 py-4 text-sm font-semibold text-white transition disabled:cursor-wait disabled:bg-red-300"
+            className="w-full rounded-[16px] bg-red-600 px-5 py-4 text-sm font-bold text-white shadow-[0_12px_24px_rgba(220,38,38,0.16)] transition disabled:cursor-wait disabled:bg-red-300"
           >
             {isSubmitting === "FAIL" ? "Фиксируем…" : "Ошибка оплаты"}
           </button>
@@ -182,7 +182,7 @@ export function DemoPaymentClient({
             type="button"
             onClick={() => handleResolve("CANCEL")}
             disabled={isSubmitting !== null}
-            className="w-full rounded-full bg-white px-5 py-4 text-sm font-semibold text-stone-700 transition disabled:cursor-wait disabled:opacity-60"
+            className="w-full rounded-[16px] border border-black/[0.06] bg-white px-5 py-4 text-sm font-bold text-jeffreys-graphite transition disabled:cursor-wait disabled:opacity-60"
           >
             {isSubmitting === "CANCEL" ? "Отменяем…" : "Отмена"}
           </button>

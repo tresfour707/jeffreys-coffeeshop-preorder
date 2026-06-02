@@ -30,7 +30,7 @@ function SearchIcon() {
     <svg
       aria-hidden="true"
       viewBox="0 0 24 24"
-      className="h-[18px] w-[18px] text-stone-400"
+      className="h-[18px] w-[18px] text-brand-600"
       fill="none"
       stroke="currentColor"
       strokeLinecap="round"
@@ -104,11 +104,13 @@ export function SearchClient({
   return (
     <CustomerMobileShell viewer={viewer} className="pb-28 pt-0" contentClassName="mt-0">
       <section className="space-y-5">
-        <div className="sticky top-[82px] z-20 -mx-1 flex items-center gap-2 bg-[#fffaf6]/78 px-1 py-2 backdrop-blur-[22px]">
+        <div className="sticky top-[82px] z-20 -mx-1 flex items-center gap-2 bg-white/78 px-1 py-2 backdrop-blur-[22px]">
           <BackLink />
 
-          <div className="flex min-h-12 flex-1 items-center gap-3 rounded-[17px] bg-[rgba(255,255,255,0.76)] px-4 shadow-[0_12px_26px_rgba(31,23,18,0.08)]">
-            <SearchIcon />
+          <div className="flex min-h-12 flex-1 items-center gap-3 rounded-[16px] border border-black/[0.055] bg-white/88 px-4 shadow-[0_12px_26px_rgba(0,0,0,0.055)]">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[11px] bg-brand-50">
+              <SearchIcon />
+            </span>
             <input
               ref={inputRef}
               type="text"
@@ -125,7 +127,7 @@ export function SearchClient({
                   inputRef.current?.focus();
                 }}
                 aria-label="Очистить поиск"
-                className="flex h-7 w-7 items-center justify-center rounded-full bg-stone-200/80 text-[18px] leading-none text-stone-600"
+                className="flex h-7 w-7 items-center justify-center rounded-full bg-jeffreys-fog text-[18px] leading-none text-jeffreys-graphite"
               >
                 ×
               </button>
@@ -134,7 +136,7 @@ export function SearchClient({
         </div>
 
         <div>
-          <h1 className="text-[30px] font-medium leading-none tracking-tight text-stone-950">
+          <h1 className="text-[30px] font-semibold leading-none tracking-tight text-jeffreys-graphite">
             {queryTokens.length > 0
               ? `Нашли ${filteredProducts.length} позиций`
               : "Все позиции"}
@@ -147,7 +149,7 @@ export function SearchClient({
             description="Попробуйте другое название."
           />
         ) : (
-          <div className="grid auto-rows-fr grid-cols-2 gap-3">
+          <div className="grid auto-rows-fr grid-cols-2 gap-3.5">
             {filteredProducts.map((product) => (
               <ProductGridCard
                 key={product.id}

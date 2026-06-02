@@ -31,7 +31,7 @@ function SearchIcon() {
     <svg
       aria-hidden="true"
       viewBox="0 0 24 24"
-      className="h-[28px] w-[28px] text-stone-950"
+      className="h-[24px] w-[24px] text-brand-600"
       fill="none"
       stroke="currentColor"
       strokeLinecap="round"
@@ -49,7 +49,7 @@ function SmallSearchIcon() {
     <svg
       aria-hidden="true"
       viewBox="0 0 24 24"
-      className="h-[20px] w-[20px] text-stone-400"
+      className="h-[18px] w-[18px] text-brand-600"
       fill="none"
       stroke="currentColor"
       strokeLinecap="round"
@@ -141,12 +141,14 @@ export function PurchasedClient({
   return (
     <CustomerMobileShell viewer={viewer} className="pb-28 pt-0" contentClassName="mt-0">
       <section className="space-y-6">
-        <div className="sticky top-[82px] z-20 -mx-1 flex items-center gap-3 bg-[#fffaf6]/78 px-1 py-2 backdrop-blur-[22px]">
+        <div className="sticky top-[82px] z-20 -mx-1 flex items-center gap-3 bg-white/78 px-1 py-2 backdrop-blur-[22px]">
           <BackLink />
 
           {isSearchOpen ? (
-            <div className="flex min-h-12 flex-1 items-center gap-3 rounded-[17px] bg-[rgba(255,255,255,0.76)] px-4 shadow-[0_12px_26px_rgba(31,23,18,0.08)]">
-              <SmallSearchIcon />
+            <div className="flex min-h-12 flex-1 items-center gap-3 rounded-[16px] border border-black/[0.055] bg-white/88 px-4 shadow-[0_12px_26px_rgba(0,0,0,0.055)]">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[11px] bg-brand-50">
+                <SmallSearchIcon />
+              </span>
               <input
                 ref={inputRef}
                 type="text"
@@ -167,21 +169,21 @@ export function PurchasedClient({
                   setIsSearchOpen(false);
                 }}
                 aria-label={query ? "Очистить поиск" : "Закрыть поиск"}
-                className="flex h-7 w-7 items-center justify-center rounded-full bg-stone-200/80 text-[18px] leading-none text-stone-600"
+                className="flex h-7 w-7 items-center justify-center rounded-full bg-jeffreys-fog text-[18px] leading-none text-jeffreys-graphite"
               >
                 ×
               </button>
             </div>
           ) : (
             <>
-              <h1 className="flex-1 text-[30px] font-medium leading-none tracking-tight text-stone-950">
+              <h1 className="flex-1 text-[30px] font-semibold leading-none tracking-tight text-jeffreys-graphite">
                 Вы покупали
               </h1>
               <button
                 type="button"
                 onClick={() => setIsSearchOpen(true)}
                 aria-label="Найти товар"
-                className="flex h-12 w-12 shrink-0 items-center justify-center text-stone-950 transition active:scale-[0.94]"
+                className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[16px] border border-black/[0.055] bg-white/86 shadow-[0_10px_22px_rgba(0,0,0,0.055)] transition active:scale-[0.94]"
               >
                 <SearchIcon />
               </button>
@@ -190,7 +192,7 @@ export function PurchasedClient({
         </div>
 
         {isSearching ? (
-          <h2 className="text-[28px] font-medium leading-none tracking-tight text-stone-950">
+          <h2 className="text-[28px] font-semibold leading-none tracking-tight text-jeffreys-graphite">
             Нашли {visibleProductsCount} позиций
           </h2>
         ) : null}
@@ -206,7 +208,7 @@ export function PurchasedClient({
             description="После первого online-заказа здесь появятся ваши любимые позиции."
           />
         ) : (
-          <div className="grid auto-rows-fr grid-cols-2 gap-3">
+          <div className="grid auto-rows-fr grid-cols-2 gap-3.5">
             {visiblePurchasedProducts.map((product) => (
               <ProductGridCard
                 key={product.id}
@@ -220,10 +222,10 @@ export function PurchasedClient({
 
         {visibleOtherProducts.length > 0 ? (
           <section className="space-y-3">
-            <h2 className="text-[26px] font-medium leading-none tracking-tight text-stone-950">
+            <h2 className="text-[26px] font-semibold leading-none tracking-tight text-jeffreys-graphite">
               {isSearching ? "Еще в меню" : "Остальное меню"}
             </h2>
-            <div className="grid auto-rows-fr grid-cols-2 gap-3">
+            <div className="grid auto-rows-fr grid-cols-2 gap-3.5">
               {visibleOtherProducts.map((product) => (
                 <ProductGridCard
                   key={product.id}

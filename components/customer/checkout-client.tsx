@@ -32,7 +32,7 @@ function InfoIcon() {
     <svg
       aria-hidden="true"
       viewBox="0 0 24 24"
-      className="h-7 w-7 text-stone-500"
+      className="h-7 w-7 text-brand-600"
       fill="none"
       stroke="currentColor"
       strokeLinecap="round"
@@ -51,7 +51,7 @@ function CardIcon() {
     <svg
       aria-hidden="true"
       viewBox="0 0 24 24"
-      className="h-7 w-7 text-[#2d5b45]"
+      className="h-7 w-7 text-jeffreys-graphite"
       fill="currentColor"
     >
       <path d="M4.75 6.25h14.5A2.75 2.75 0 0 1 22 9v1H2V9a2.75 2.75 0 0 1 2.75-2.75Z" />
@@ -73,7 +73,7 @@ function SbpMark() {
 
 function SberPayBadge() {
   return (
-    <span className="inline-flex h-9 items-center rounded-full bg-[linear-gradient(90deg,#68c936,#27c6b7)] px-3 text-sm font-bold text-white">
+    <span className="inline-flex h-9 items-center rounded-[13px] bg-[#40c86a] px-3 text-sm font-bold text-white">
       Pay
     </span>
   );
@@ -84,7 +84,7 @@ function RadioCircle({ checked }: { checked: boolean }) {
     <span
       className={cn(
         "flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-[2.5px] transition",
-        checked ? "border-[#7ea174] bg-[#7ea174]" : "border-stone-300 bg-white",
+        checked ? "border-brand-600 bg-brand-600" : "border-stone-300 bg-white",
       )}
     >
       {checked ? <span className="h-2.5 w-2.5 rounded-full bg-white" /> : null}
@@ -109,11 +109,11 @@ function PaymentOption({
     <button
       type="button"
       onClick={onClick}
-      className="flex w-full items-center gap-4 rounded-[24px] px-1 py-4 text-left transition active:scale-[0.99]"
+      className="flex w-full items-center gap-4 rounded-[18px] px-2 py-4 text-left transition active:scale-[0.99] active:bg-brand-50/45"
     >
       <RadioCircle checked={checked} />
       <span className="min-w-0 flex-1">
-        <span className="block text-[22px] font-semibold leading-none tracking-tight text-stone-950">
+        <span className="block text-[22px] font-semibold leading-none tracking-tight text-jeffreys-graphite">
           {title}
         </span>
         {description ? (
@@ -213,7 +213,7 @@ export function CheckoutClient({ viewer }: CheckoutClientProps) {
 
   const header = (
     <section className="relative flex min-h-12 items-center justify-center">
-      <h1 className="text-[30px] font-medium leading-none tracking-tight text-stone-950">
+      <h1 className="text-[30px] font-semibold leading-none tracking-tight text-jeffreys-graphite">
         Оплата
       </h1>
     </section>
@@ -227,7 +227,7 @@ export function CheckoutClient({ viewer }: CheckoutClientProps) {
         contentClassName="mt-6"
         header={header}
       >
-        <div className="customer-soft-card px-5 py-6 text-sm text-stone-600">
+        <div className="rounded-[20px] border border-black/[0.06] bg-white px-5 py-6 text-sm text-stone-600 shadow-[0_16px_34px_rgba(0,0,0,0.055)]">
           Подготавливаем оплату...
         </div>
       </CustomerMobileShell>
@@ -263,15 +263,15 @@ export function CheckoutClient({ viewer }: CheckoutClientProps) {
       header={header}
     >
       <div className="space-y-4">
-        <section className="rounded-[34px] border border-white/75 bg-[rgba(255,255,255,0.78)] px-5 py-5 shadow-[0_16px_34px_rgba(31,23,18,0.08)] backdrop-blur-[22px]">
+        <section className="rounded-[22px] border border-black/[0.06] bg-white px-5 py-5 shadow-[0_16px_34px_rgba(0,0,0,0.06)]">
           <div className="flex items-center justify-between gap-4">
-            <h2 className="text-[31px] font-medium leading-none tracking-tight text-stone-950">
+            <h2 className="text-[30px] font-semibold leading-none tracking-tight text-jeffreys-graphite">
               Способы оплаты
             </h2>
             <InfoIcon />
           </div>
 
-          <div className="mt-4 divide-y divide-stone-200/75">
+          <div className="mt-4 divide-y divide-black/[0.06]">
             <PaymentOption
               checked={method === "DEMO_SBP"}
               title="СБП"
@@ -290,7 +290,7 @@ export function CheckoutClient({ viewer }: CheckoutClientProps) {
               {method === "DEMO_CARD" ? (
                 <button
                   type="button"
-                  className="mb-4 mt-1 flex min-h-[118px] w-full items-center justify-center rounded-[24px] border border-stone-200 bg-[#f4f4f2] px-5 text-[24px] font-medium tracking-tight text-[#285944] shadow-[inset_0_1px_0_rgba(255,255,255,0.72)] transition active:scale-[0.99]"
+                  className="mb-4 mt-1 flex min-h-[112px] w-full items-center justify-center rounded-[18px] border border-black/[0.06] bg-jeffreys-fog px-5 text-[23px] font-semibold tracking-tight text-jeffreys-graphite transition active:scale-[0.99]"
                 >
                   Новая карта
                 </button>
@@ -308,21 +308,21 @@ export function CheckoutClient({ viewer }: CheckoutClientProps) {
         </section>
 
         {error ? (
-          <div className="rounded-[28px] bg-red-50 px-4 py-4 text-sm leading-6 text-red-700">
+          <div className="rounded-[18px] border border-red-100 bg-red-50 px-4 py-4 text-sm leading-6 text-red-700">
             {error}
           </div>
         ) : null}
 
-        <section className="rounded-[34px] border border-white/75 bg-[rgba(255,255,255,0.82)] px-5 py-5 shadow-[0_16px_34px_rgba(31,23,18,0.08)] backdrop-blur-[22px]">
+        <section className="rounded-[22px] border border-black/[0.06] bg-white px-5 py-5 shadow-[0_16px_34px_rgba(0,0,0,0.06)]">
           <div className="flex items-center justify-between gap-4">
-            <h2 className="text-[32px] font-medium leading-none tracking-tight text-stone-950">
+            <h2 className="text-[32px] font-semibold leading-none tracking-tight text-jeffreys-graphite">
               Итого
             </h2>
             <div className="flex items-center gap-2 text-right">
-              <p className="text-[26px] font-semibold leading-none tracking-tight text-stone-950">
+              <p className="text-[26px] font-bold leading-none tracking-tight text-jeffreys-graphite">
                 {formatMoney(summary.totalPrice)}
               </p>
-              <span className="text-[28px] leading-none text-stone-950">⌄</span>
+              <span className="text-[28px] leading-none text-brand-600">⌄</span>
             </div>
           </div>
 
@@ -330,7 +330,7 @@ export function CheckoutClient({ viewer }: CheckoutClientProps) {
             type="button"
             onClick={handlePay}
             disabled={isSubmitting}
-            className="mt-5 w-full rounded-full bg-[#6b4a38] px-5 py-4 text-[18px] font-semibold text-white shadow-[0_18px_36px_rgba(91,64,45,0.18)] transition hover:bg-[#5f4131] active:scale-[0.98] disabled:cursor-wait disabled:bg-stone-300 disabled:shadow-none"
+            className="mt-5 w-full rounded-[16px] bg-brand-600 px-5 py-4 text-[18px] font-bold text-white shadow-[0_18px_36px_rgba(213,31,54,0.2)] transition hover:bg-brand-700 active:scale-[0.98] disabled:cursor-wait disabled:bg-stone-300 disabled:shadow-none"
           >
             {isSubmitting ? "Оплачиваем..." : "Оплатить"}
           </button>

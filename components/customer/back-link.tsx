@@ -34,7 +34,7 @@ export function BackLink({
       href={href}
       aria-label="Назад к меню"
       className={cn(
-        "flex h-12 w-10 shrink-0 items-center justify-center text-stone-950 transition active:scale-[0.94]",
+        "flex h-12 w-10 shrink-0 items-center justify-center text-jeffreys-graphite transition active:scale-[0.94]",
         className,
       )}
     >

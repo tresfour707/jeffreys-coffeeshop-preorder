@@ -4,20 +4,26 @@
 
 :root {
   color-scheme: light;
-  --background: #f6efe8;
-  --background-strong: #fffaf6;
-  --surface: rgba(255, 250, 244, 0.88);
+  --background: #f3f3f1;
+  --background-strong: #ffffff;
+  --surface: rgba(255, 255, 255, 0.9);
   --surface-strong: #ffffff;
-  --line: rgba(69, 56, 44, 0.12);
-  --line-strong: rgba(69, 56, 44, 0.2);
-  --foreground: #1f1712;
-  --muted: #726459;
-  --muted-strong: #55493f;
-  --blue-soft: #7fa8ee;
-  --blue-soft-strong: #6a98e6;
-  --peach-soft: #f0c9b8;
-  --cream-soft: #fff7f0;
-  --header-shadow: rgba(43, 29, 20, 0.08);
+  --surface-muted: #f7f7f5;
+  --line: rgba(17, 17, 17, 0.1);
+  --line-strong: rgba(17, 17, 17, 0.18);
+  --foreground: #101010;
+  --muted: #6a6764;
+  --muted-strong: #3f3d3a;
+  --brand-red: #d51f36;
+  --brand-red-dark: #b9162c;
+  --brand-red-soft: #fff0f2;
+  --brand-red-muted: #f7d8dc;
+  --brand-black: #090909;
+  --brand-graphite: #171717;
+  --brand-ash: #ebebeb;
+  --brand-ash-strong: #d8d8d5;
+  --header-shadow: rgba(0, 0, 0, 0.09);
+  --focus-ring: rgba(213, 31, 54, 0.16);
 }
 
 html,
@@ -31,12 +37,16 @@ html {
 
 body {
   margin: 0;
-  background:
-    radial-gradient(circle at top left, rgba(142, 173, 236, 0.28), transparent 32%),
-    radial-gradient(circle at bottom right, rgba(240, 201, 184, 0.34), transparent 24%),
-    linear-gradient(180deg, var(--background-strong) 0%, var(--background) 100%);
+  background: linear-gradient(180deg, var(--background-strong) 0%, var(--background) 100%);
   color: var(--foreground);
-  font-family: "Avenir Next", "Arial Nova", "Trebuchet MS", "Segoe UI", sans-serif;
+  font-family:
+    var(--font-jeffreys),
+    var(--font-jeffreys-secondary),
+    "Noto Sans",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
 }
 
 body::before {
@@ -45,12 +55,12 @@ body::before {
   inset: 0;
   pointer-events: none;
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.14) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.14) 1px, transparent 1px);
+    linear-gradient(rgba(213, 31, 54, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(9, 9, 9, 0.025) 1px, transparent 1px);
   background-position: center;
-  background-size: 28px 28px;
-  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.25), transparent 80%);
-  opacity: 0.32;
+  background-size: 32px 32px;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.18), transparent 74%);
+  opacity: 0.44;
 }
 
 a {
@@ -59,11 +69,11 @@ a {
 }
 
 * {
-  border-color: rgba(168, 141, 109, 0.22);
+  border-color: rgba(17, 17, 17, 0.12);
 }
 
 ::selection {
-  background: rgba(127, 168, 238, 0.24);
+  background: rgba(213, 31, 54, 0.18);
 }
 
 @keyframes cartBarRefresh {
@@ -87,21 +97,19 @@ select {
 
 @layer components {
   .surface {
-    @apply rounded-[28px] border shadow-panel backdrop-blur-sm;
+    @apply rounded-[22px] border shadow-panel backdrop-blur-sm;
     background: var(--surface);
     border-color: var(--line);
   }
 
   .surface-strong {
-    @apply rounded-[28px] border bg-white shadow-soft;
+    @apply rounded-[22px] border bg-white shadow-soft;
     border-color: var(--line);
   }
 
   .hero-surface {
-    @apply relative overflow-hidden rounded-[32px] border px-5 py-6 shadow-soft md:px-8 md:py-8;
-    background:
-      radial-gradient(circle at top right, rgba(239, 226, 210, 0.88), transparent 32%),
-      linear-gradient(180deg, rgba(255, 251, 245, 0.96) 0%, rgba(252, 247, 240, 0.9) 100%);
+    @apply relative overflow-hidden rounded-[24px] border px-5 py-6 shadow-soft md:px-8 md:py-8;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(247, 247, 245, 0.94) 100%);
     border-color: var(--line);
   }
 
@@ -111,36 +119,49 @@ select {
 
   .label-muted,
   .kicker {
-    @apply text-[11px] font-bold uppercase tracking-[0.24em] text-stone-500;
+    @apply text-[11px] font-bold uppercase tracking-[0.22em];
+    color: var(--muted);
   }
 
   .btn-primary {
-    @apply inline-flex items-center justify-center rounded-full bg-stone-950 px-5 py-3.5 text-sm font-semibold text-white transition hover:bg-stone-800 disabled:cursor-not-allowed disabled:bg-stone-300 disabled:text-stone-500;
+    @apply inline-flex items-center justify-center rounded-[14px] bg-brand-600 px-5 py-3.5 text-sm font-bold text-white transition hover:bg-brand-700 disabled:cursor-not-allowed disabled:bg-brand-200 disabled:text-brand-800;
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center rounded-full border border-stone-300 bg-white px-5 py-3.5 text-sm font-semibold text-stone-700 transition hover:border-stone-400 hover:bg-stone-50 disabled:cursor-not-allowed disabled:opacity-60;
+    @apply inline-flex items-center justify-center rounded-[14px] border bg-white px-5 py-3.5 text-sm font-bold transition hover:bg-stone-50 disabled:cursor-not-allowed disabled:opacity-60;
+    border-color: var(--line-strong);
+    color: var(--brand-graphite);
   }
 
   .btn-brand {
-    @apply inline-flex items-center justify-center rounded-full bg-brand-600 px-5 py-3.5 text-sm font-semibold text-white transition hover:bg-brand-700 disabled:cursor-not-allowed disabled:bg-brand-200 disabled:text-brand-700;
+    @apply inline-flex items-center justify-center rounded-[14px] bg-brand-600 px-5 py-3.5 text-sm font-bold text-white transition hover:bg-brand-700 disabled:cursor-not-allowed disabled:bg-brand-200 disabled:text-brand-800;
   }
 
   .field-input {
-    @apply mt-2 w-full rounded-[22px] border border-stone-300 bg-white px-4 py-3.5 text-sm text-stone-900 outline-none transition placeholder:text-stone-400 focus:border-stone-900 focus:ring-2 focus:ring-stone-900/10;
+    @apply mt-2 w-full rounded-[16px] border bg-white px-4 py-3.5 text-sm text-stone-950 outline-none transition placeholder:text-stone-400 focus:ring-2;
+    border-color: var(--line-strong);
+    --tw-ring-color: var(--focus-ring);
+  }
+
+  .field-input:focus {
+    border-color: var(--brand-red);
   }
 
   .chip {
-    @apply inline-flex items-center rounded-full border border-stone-200 bg-white px-4 py-2.5 text-sm font-semibold text-stone-700 transition hover:border-stone-400 hover:bg-stone-50;
+    @apply inline-flex items-center rounded-[14px] border bg-white px-4 py-2.5 text-sm font-bold transition hover:bg-stone-50;
+    border-color: var(--line);
+    color: var(--brand-graphite);
   }
 
   .chip-active {
-    @apply border-stone-900 bg-stone-900 text-white hover:border-stone-900 hover:bg-stone-900;
+    @apply text-white;
+    background: var(--brand-red);
+    border-color: var(--brand-red);
   }
 
   .metric-card {
-    @apply rounded-[24px] border p-4;
-    background: rgba(255, 255, 255, 0.78);
+    @apply rounded-[18px] border p-4;
+    background: rgba(255, 255, 255, 0.88);
     border-color: var(--line);
   }
 
@@ -158,10 +179,10 @@ select {
 
   .customer-top-island {
     @apply relative w-full overflow-hidden;
-    background: rgba(255, 255, 255, 0.32);
+    background: rgba(255, 255, 255, 0.82);
     box-shadow: 0 12px 26px var(--header-shadow);
-    -webkit-backdrop-filter: blur(32px) saturate(1.05);
-    backdrop-filter: blur(32px) saturate(1.05);
+    -webkit-backdrop-filter: blur(24px) saturate(1.05);
+    backdrop-filter: blur(24px) saturate(1.05);
   }
 
   .customer-top-island-inner {
@@ -169,34 +190,30 @@ select {
   }
 
   .customer-hero {
-    @apply relative overflow-hidden rounded-[34px] border px-5 pb-6 pt-5 shadow-soft;
-    background:
-      radial-gradient(circle at 24% 28%, rgba(206, 194, 177, 0.26), transparent 18%),
-      radial-gradient(circle at 82% 76%, rgba(222, 205, 188, 0.28), transparent 20%),
-      radial-gradient(circle at 16% 88%, rgba(236, 214, 167, 0.22), transparent 16%),
-      linear-gradient(180deg, rgba(242, 242, 239, 0.98) 0%, rgba(250, 247, 243, 0.96) 100%);
-    border-color: rgba(255, 255, 255, 0.6);
+    @apply relative overflow-hidden rounded-[24px] border px-5 pb-6 pt-5 shadow-soft;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(247, 247, 245, 0.95) 100%);
+    border-color: rgba(17, 17, 17, 0.08);
   }
 
   .customer-soft-card {
-    @apply rounded-[30px] border p-5 shadow-panel backdrop-blur-sm;
-    background: rgba(255, 251, 247, 0.82);
-    border-color: rgba(69, 56, 44, 0.08);
+    @apply rounded-[24px] border p-5 shadow-panel backdrop-blur-sm;
+    background: rgba(255, 255, 255, 0.9);
+    border-color: rgba(17, 17, 17, 0.08);
   }
 
   .customer-soft-card-strong {
-    @apply rounded-[30px] border bg-white p-5 shadow-panel;
-    border-color: rgba(69, 56, 44, 0.08);
+    @apply rounded-[24px] border bg-white p-5 shadow-panel;
+    border-color: rgba(17, 17, 17, 0.08);
   }
 
   .customer-matte-overlay {
-    background: rgba(255, 255, 255, 0.34);
-    -webkit-backdrop-filter: blur(44px) saturate(1.06);
-    backdrop-filter: blur(44px) saturate(1.06);
+    background: rgba(255, 255, 255, 0.78);
+    -webkit-backdrop-filter: blur(34px) saturate(1.08);
+    backdrop-filter: blur(34px) saturate(1.08);
   }
 
   .customer-poster-card {
-    @apply relative overflow-hidden rounded-[32px] px-4 py-5 text-left shadow-panel;
+    @apply relative overflow-hidden rounded-[22px] px-4 py-5 text-left shadow-panel;
   }
 
   .customer-action-bar {
@@ -204,21 +221,21 @@ select {
   }
 
   .customer-action-bar-inner {
-    @apply mx-auto w-full max-w-[398px] rounded-[28px] border p-3 shadow-soft backdrop-blur-md;
-    background: rgba(255, 251, 247, 0.94);
-    border-color: rgba(69, 56, 44, 0.08);
+    @apply mx-auto w-full max-w-[398px] rounded-[22px] border p-3 shadow-soft backdrop-blur-md;
+    background: rgba(255, 255, 255, 0.94);
+    border-color: rgba(17, 17, 17, 0.08);
   }
 
   .customer-inline-chip {
-    @apply inline-flex items-center rounded-full border px-4 py-2 text-sm font-semibold transition;
-    border-color: rgba(69, 56, 44, 0.12);
+    @apply inline-flex items-center rounded-[14px] border px-4 py-2 text-sm font-bold transition;
+    border-color: rgba(17, 17, 17, 0.12);
     background: rgba(255, 255, 255, 0.86);
   }
 
   .customer-inline-chip-active {
     @apply text-white;
-    background: rgba(31, 23, 18, 0.96);
-    border-color: rgba(31, 23, 18, 0.96);
+    background: var(--brand-red);
+    border-color: var(--brand-red);
   }
 
 }

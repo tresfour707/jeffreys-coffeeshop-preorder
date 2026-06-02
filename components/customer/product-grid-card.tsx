@@ -35,13 +35,13 @@ function PlusGlyph({ compact }: { compact: boolean }) {
     <span className={cn("relative block", compact ? "h-[15px] w-[15px]" : "h-[18px] w-[18px]")}>
       <span
         className={cn(
-          "absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#fff7ef]",
+          "absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white",
           compact ? "h-[2px] w-[14px]" : "h-[2.25px] w-[16px]",
         )}
       />
       <span
         className={cn(
-          "absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#fff7ef]",
+          "absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white",
           compact ? "h-[14px] w-[2px]" : "h-[16px] w-[2.25px]",
         )}
       />
@@ -59,8 +59,8 @@ export function ProductGridCard({
   return (
     <article
       className={cn(
-        "flex h-full flex-col overflow-hidden bg-white shadow-[0_6px_18px_rgba(17,24,39,0.05)]",
-        compact ? "rounded-[20px] p-1.5" : "rounded-[22px] p-2",
+        "flex h-full flex-col overflow-hidden border border-black/[0.055] bg-white shadow-[0_12px_28px_rgba(0,0,0,0.055)]",
+        compact ? "rounded-[18px] p-1.5" : "rounded-[20px] p-2",
         className,
       )}
     >
@@ -73,7 +73,7 @@ export function ProductGridCard({
         <ProductArtwork
           product={product}
           size={compact ? "compact" : "regular"}
-          className={compact ? "rounded-[16px]" : "rounded-[18px]"}
+          className={compact ? "rounded-[14px]" : "rounded-[16px]"}
         />
 
         <div className={cn("px-1 pb-1", compact ? "pt-2.5" : "pt-3")}>
@@ -99,7 +99,7 @@ export function ProductGridCard({
           disabled={!product.available}
           onClick={() => onOpen(product)}
           className={cn(
-            "ml-auto flex items-center justify-center rounded-full bg-[#c69a7d] shadow-[0_12px_26px_rgba(117,75,48,0.22)] transition hover:bg-[#bb8d70] disabled:cursor-not-allowed disabled:bg-stone-300 disabled:shadow-none",
+            "ml-auto flex items-center justify-center rounded-full bg-brand-600 shadow-[0_12px_24px_rgba(213,31,54,0.2)] transition hover:bg-brand-700 disabled:cursor-not-allowed disabled:bg-stone-300 disabled:shadow-none",
             compact ? "h-8 w-[58px]" : "h-10 w-[74px]",
           )}
         >

@@ -1,5 +1,3 @@
-import Image from "next/image";
-
 import { cn } from "@/lib/cn";
 
 type BrandMarkProps = {
@@ -9,9 +7,9 @@ type BrandMarkProps = {
 };
 
 const sizeClasses = {
-  sm: "w-[102px]",
-  md: "w-[122px]",
-  lg: "w-[144px]",
+  sm: "text-[13px]",
+  md: "text-[17px]",
+  lg: "text-[21px]",
 } as const;
 
 export function BrandMark({
@@ -19,22 +17,23 @@ export function BrandMark({
   size = "md",
   className,
 }: BrandMarkProps) {
-  const src = tone === "light" ? "/brand/grlsha-light.png" : "/brand/grlsha-dark.png";
-  const filter =
-    tone === "coffee"
-      ? "brightness(0) saturate(100%) invert(23%) sepia(15%) saturate(1036%) hue-rotate(342deg) brightness(92%) contrast(89%)"
-      : undefined;
+  const toneClass =
+    tone === "light"
+      ? "text-white"
+      : tone === "coffee"
+        ? "text-brand-600"
+        : "text-jeffreys-graphite";
 
   return (
-    <Image
-      src={src}
-      alt="грЛша"
-      width={1040}
-      height={292}
-      priority
-      unoptimized
-      style={filter ? { filter } : undefined}
-      className={cn("h-auto select-none", sizeClasses[size], className)}
-    />
+    <span
+      className={cn(
+        "block select-none whitespace-nowrap text-center font-extrabold uppercase leading-none tracking-[0.055em]",
+        sizeClasses[size],
+        toneClass,
+        className,
+      )}
+    >
+      Jeffrey&apos;s Coffeeshop
+    </span>
   );
 }

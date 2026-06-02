@@ -35,7 +35,7 @@ function SearchIcon() {
     <svg
       aria-hidden="true"
       viewBox="0 0 24 24"
-      className="h-4 w-4 text-stone-400"
+      className="h-4 w-4 text-brand-600"
       fill="none"
       stroke="currentColor"
       strokeLinecap="round"
@@ -109,15 +109,17 @@ export function CategoryMenuClient({
         <div className="flex items-center gap-2">
           <BackLink />
 
-          <div className="min-h-12 flex-1 rounded-[18px] bg-[#f3f2ee] px-4 py-3.5">
+          <div className="min-h-12 flex-1 rounded-[16px] border border-black/[0.055] bg-white/88 px-4 py-3.5 shadow-[0_12px_26px_rgba(0,0,0,0.055)]">
             <div className="flex items-center gap-3">
-              <SearchIcon />
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[11px] bg-brand-50">
+                <SearchIcon />
+              </span>
               <input
                 type="text"
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder="Что вы хотите найти?"
-                className="w-full bg-transparent text-sm text-stone-900 outline-none placeholder:text-stone-400"
+                className="w-full bg-transparent text-[15px] font-medium text-stone-900 outline-none placeholder:text-stone-400"
               />
             </div>
           </div>
@@ -132,10 +134,10 @@ export function CategoryMenuClient({
                 key={chip}
                 type="button"
                 onClick={() => setActiveChip(chip)}
-                className={`shrink-0 rounded-[14px] px-4 py-2.5 text-sm font-medium transition ${
+                className={`shrink-0 rounded-[14px] border px-4 py-2.5 text-sm font-semibold transition ${
                   isActive
-                    ? "bg-[#eceae5] text-stone-950"
-                    : "bg-transparent text-stone-700"
+                    ? "border-brand-600 bg-brand-600 text-white shadow-[0_10px_20px_rgba(213,31,54,0.14)]"
+                    : "border-black/[0.055] bg-white/70 text-jeffreys-graphite"
                 }`}
               >
                 {chip}
@@ -145,9 +147,12 @@ export function CategoryMenuClient({
         </div>
 
         <div>
-          <h1 className="text-[32px] font-medium leading-none tracking-tight text-stone-950">
+          <h1 className="text-[32px] font-semibold leading-none tracking-tight text-jeffreys-graphite">
             {category.label}
           </h1>
+          <p className="mt-2 text-[12px] font-bold uppercase leading-none tracking-[0.16em] text-brand-600">
+            {filteredProducts.length} позиций
+          </p>
         </div>
 
         {filteredProducts.length === 0 ? (
@@ -156,7 +161,7 @@ export function CategoryMenuClient({
             description="Попробуйте убрать фильтр или изменить поисковый запрос."
           />
         ) : (
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-3.5">
             {filteredProducts.map((product) => (
               <ProductGridCard
                 key={product.id}

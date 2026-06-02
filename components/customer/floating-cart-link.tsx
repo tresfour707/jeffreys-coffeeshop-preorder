@@ -15,7 +15,7 @@ function CartIcon() {
     <svg
       aria-hidden="true"
       viewBox="0 0 32 32"
-      className="h-8 w-8 text-stone-950"
+      className="h-8 w-8 text-white"
       fill="none"
       stroke="currentColor"
       strokeLinecap="round"
@@ -43,15 +43,15 @@ export function FloatingCartLink({
         aria-label={`Открыть корзину: ${itemsCount} позиций на ${formatMoney(totalPrice)}`}
         className="group flex flex-col items-center gap-2"
       >
-        <span className="relative flex h-[74px] w-[74px] items-center justify-center rounded-[26px] border border-white/80 bg-[rgba(255,255,255,0.86)] shadow-[0_18px_42px_rgba(31,23,18,0.18)] backdrop-blur-[26px] transition duration-200 group-active:scale-[0.96]">
-          <span className="absolute -right-1 -top-1 inline-flex min-h-6 min-w-6 items-center justify-center rounded-full bg-stone-950 px-1.5 text-[11px] font-bold leading-none tracking-tight text-white shadow-[0_10px_20px_rgba(31,23,18,0.22)]">
+        <span className="relative flex h-[72px] w-[72px] items-center justify-center rounded-[22px] border border-brand-500 bg-brand-600 shadow-[0_18px_42px_rgba(213,31,54,0.24)] transition duration-200 group-active:scale-[0.96]">
+          <span className="absolute -right-1 -top-1 inline-flex min-h-6 min-w-6 items-center justify-center rounded-full bg-jeffreys-graphite px-1.5 text-[11px] font-bold leading-none tracking-tight text-white shadow-[0_10px_20px_rgba(0,0,0,0.18)]">
             {badgeLabel}
           </span>
 
           <CartIcon />
         </span>
 
-        <span className="inline-flex min-h-9 items-center justify-center rounded-full border border-white/75 bg-[rgba(255,255,255,0.8)] px-4 text-[13px] font-semibold tracking-tight text-stone-950 shadow-[0_14px_28px_rgba(31,23,18,0.12)] backdrop-blur-[24px]">
+        <span className="inline-flex min-h-9 items-center justify-center rounded-[14px] border border-black/[0.055] bg-white/88 px-4 text-[13px] font-bold tracking-tight text-jeffreys-graphite shadow-[0_14px_28px_rgba(0,0,0,0.08)] backdrop-blur-[24px]">
           {formatMoney(totalPrice)}
         </span>
       </Link>

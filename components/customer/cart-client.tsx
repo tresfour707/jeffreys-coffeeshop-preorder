@@ -72,7 +72,7 @@ function CartItemImage({ item }: { item: CartLine }) {
   const media = getProductMedia(getCartDisplayName(item));
 
   return (
-    <div className="relative h-[78px] w-[78px] shrink-0 overflow-hidden rounded-[21px] bg-[#f5f2ed]">
+    <div className="relative h-[78px] w-[78px] shrink-0 overflow-hidden rounded-[18px] border border-black/[0.045] bg-jeffreys-fog">
       {media ? (
         <Image
           src={media.src}
@@ -83,7 +83,7 @@ function CartItemImage({ item }: { item: CartLine }) {
           style={{ objectPosition: media.objectPosition ?? "center center" }}
         />
       ) : (
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_42%,rgba(255,255,255,0.9),transparent_36%),linear-gradient(180deg,#f5eee6,#eee2d7)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_42%,rgba(255,255,255,0.92),transparent_36%),linear-gradient(180deg,#ffffff,#f0f0ee)]" />
       )}
     </div>
   );
@@ -101,16 +101,16 @@ function CartStepper({
   disabled?: boolean;
 }) {
   return (
-    <div className="flex h-9 w-[108px] shrink-0 items-center justify-between rounded-[16px] bg-[#efe9e2] px-3 text-stone-950">
+    <div className="flex h-9 w-[108px] shrink-0 items-center justify-between rounded-[14px] border border-black/[0.055] bg-white px-3 text-jeffreys-graphite shadow-[0_8px_18px_rgba(0,0,0,0.045)]">
       <button
         type="button"
         onClick={onDecrement}
         disabled={disabled}
         className="flex h-7 w-7 items-center justify-center transition active:scale-90 disabled:opacity-40"
       >
-        <span className="h-[2.5px] w-[15px] rounded-full bg-stone-800" />
+        <span className="h-[2.4px] w-[15px] rounded-full bg-jeffreys-graphite" />
       </button>
-      <span className="min-w-5 text-center text-[16px] font-medium leading-none text-stone-800">
+      <span className="min-w-5 text-center text-[16px] font-bold leading-none text-jeffreys-graphite">
         {quantity}
       </span>
       <button
@@ -119,8 +119,8 @@ function CartStepper({
         disabled={disabled}
         className="relative flex h-7 w-7 items-center justify-center transition active:scale-90 disabled:opacity-40"
       >
-        <span className="absolute h-[2.5px] w-[15px] rounded-full bg-stone-800" />
-        <span className="absolute h-[15px] w-[2.5px] rounded-full bg-stone-800" />
+        <span className="absolute h-[2.4px] w-[15px] rounded-full bg-brand-600" />
+        <span className="absolute h-[15px] w-[2.4px] rounded-full bg-brand-600" />
       </button>
     </div>
   );
@@ -172,7 +172,7 @@ export function CartClient({ viewer }: CartClientProps) {
   const header = useMemo(
     () => (
       <section className="relative flex min-h-12 items-center justify-center">
-        <h1 className="text-[30px] font-medium leading-none tracking-tight text-stone-950">
+        <h1 className="text-[30px] font-semibold leading-none tracking-tight text-jeffreys-graphite">
           Корзина
         </h1>
 
@@ -181,7 +181,7 @@ export function CartClient({ viewer }: CartClientProps) {
             type="button"
             onClick={() => setShowClearAction((current) => !current)}
             aria-label="Показать очистку корзины"
-            className="absolute right-1 flex h-10 w-10 items-center justify-center rounded-full text-stone-600 transition active:scale-[0.94]"
+            className="absolute right-1 flex h-10 w-10 items-center justify-center rounded-[14px] text-brand-700 transition active:scale-[0.94] active:bg-brand-50"
           >
             <TrashIcon />
           </button>
@@ -217,7 +217,7 @@ export function CartClient({ viewer }: CartClientProps) {
         className="pb-28 pt-0"
         header={header}
       >
-        <div className="customer-soft-card px-5 py-6 text-sm text-stone-600">
+        <div className="rounded-[20px] border border-black/[0.06] bg-white px-5 py-6 text-sm text-stone-600 shadow-[0_16px_34px_rgba(0,0,0,0.055)]">
           Загружаем корзину...
         </div>
       </CustomerMobileShell>
@@ -252,7 +252,7 @@ export function CartClient({ viewer }: CartClientProps) {
       className="pb-36 pt-0"
       header={header}
     >
-      <section className="overflow-hidden rounded-[28px] bg-[rgba(255,255,255,0.76)] px-3 py-1 shadow-[0_16px_34px_rgba(31,23,18,0.08)] backdrop-blur-[22px]">
+      <section className="overflow-hidden rounded-[22px] border border-black/[0.06] bg-white px-3 py-1 shadow-[0_16px_34px_rgba(0,0,0,0.06)]">
         {items.map((item, index) => {
           const isRemoving = removingIds.has(item.productId);
           const product = getCartLineProduct(item);
@@ -270,16 +270,16 @@ export function CartClient({ viewer }: CartClientProps) {
               <div
                 className={cn(
                   "grid grid-cols-[78px_minmax(0,1fr)_auto] items-center gap-3 py-3",
-                  index > 0 ? "border-t border-stone-200/80" : "",
+                  index > 0 ? "border-t border-black/[0.06]" : "",
                 )}
               >
                 <CartItemImage item={item} />
 
                 <div className="min-w-0">
-                  <h2 className="line-clamp-2 text-[16px] font-medium leading-[1.14] tracking-tight text-stone-950">
+                  <h2 className="line-clamp-2 text-[16px] font-semibold leading-[1.14] tracking-tight text-jeffreys-graphite">
                     {getCartDisplayName(item)}
                   </h2>
-                  <p className="mt-2 text-[14px] font-semibold leading-none text-stone-950">
+                  <p className="mt-2 text-[14px] font-bold leading-none text-jeffreys-graphite">
                     {formatMoney(item.price)}
                     {item.sizeLabel ? (
                       <span className="font-normal text-stone-400"> · {item.sizeLabel}</span>
@@ -301,7 +301,7 @@ export function CartClient({ viewer }: CartClientProps) {
 
       <Link
         href="/menu#quick-search"
-        className="mt-5 flex min-h-12 items-center justify-center rounded-full border border-white/70 bg-[rgba(255,255,255,0.68)] px-5 text-[16px] font-semibold tracking-tight text-stone-800 shadow-[0_14px_28px_rgba(31,23,18,0.07)] backdrop-blur-[22px] transition active:scale-[0.98]"
+        className="mt-5 flex min-h-12 items-center justify-center rounded-[16px] border border-black/[0.055] bg-white/88 px-5 text-[16px] font-bold tracking-tight text-jeffreys-graphite shadow-[0_14px_28px_rgba(0,0,0,0.055)] backdrop-blur-[22px] transition active:scale-[0.98]"
       >
         Вернуться в меню
       </Link>
@@ -315,7 +315,7 @@ export function CartClient({ viewer }: CartClientProps) {
                 clearCart(ownerKey);
                 setShowClearAction(false);
               }}
-              className="w-full rounded-full bg-[#b74236] px-5 py-3 text-sm font-semibold text-white shadow-[0_16px_32px_rgba(183,66,54,0.24)] transition active:scale-[0.97]"
+              className="w-full rounded-[16px] bg-brand-700 px-5 py-3 text-sm font-bold text-white shadow-[0_16px_32px_rgba(213,31,54,0.22)] transition active:scale-[0.97]"
             >
               Очистить корзину
             </button>
@@ -330,13 +330,13 @@ export function CartClient({ viewer }: CartClientProps) {
         >
           <div>
             <p className="text-sm text-stone-500">{getPositionsLabel(summary.itemsCount)}</p>
-            <p className="mt-1 text-lg font-semibold tracking-tight text-stone-950">
+            <p className="mt-1 text-lg font-bold tracking-tight text-jeffreys-graphite">
               {formatMoney(summary.totalPrice)}
             </p>
           </div>
           <Link
             href="/checkout"
-            className="rounded-full bg-[#6b4a38] px-5 py-3 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(91,64,45,0.18)] transition hover:bg-[#5f4131] active:scale-[0.97]"
+            className="rounded-[16px] bg-brand-600 px-5 py-3 text-sm font-bold text-white shadow-[0_12px_24px_rgba(213,31,54,0.2)] transition hover:bg-brand-700 active:scale-[0.97]"
           >
             К оформлению
           </Link>
