@@ -13,7 +13,7 @@ export async function POST(request: Request) {
     const payment = await createDemoPayment({
       userId: viewer.id,
       customerName: viewer.name,
-      customerEmail: viewer.email,
+      customerEmail: viewer.email ?? null,
       method: body?.method === "DEMO_SBP" ? "DEMO_SBP" : "DEMO_CARD",
       items: Array.isArray(body?.items) ? body.items : [],
     });

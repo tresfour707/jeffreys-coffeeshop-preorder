@@ -241,7 +241,7 @@ function getViewerInitials(viewer: ViewerSummary) {
     .map((part) => part[0])
     .join("");
 
-  return (initials || viewer.email[0] || "A").toUpperCase();
+  return (initials || viewer.phone[1] || "A").toUpperCase();
 }
 
 function AccountMenuRow({

@@ -183,8 +183,8 @@ export function ProfileClient({ viewer }: ProfileClientProps) {
     name: viewer.name,
     birthDate: toDateInputValue(viewer.birthDate),
     gender: viewer.gender ?? "",
-    email: viewer.email,
-    phone: viewer.phone ?? "",
+    email: viewer.email ?? "",
+    phone: viewer.phone,
   });
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);

@@ -112,11 +112,11 @@ function MetricCard({
   value: string;
 }) {
   return (
-    <div className="rounded-[24px] bg-[#f8f2ec] px-4 py-4">
+    <div className="rounded-[24px] bg-jeffreys-fog px-4 py-4">
       <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-stone-400">
         {label}
       </p>
-      <p className="mt-2 text-[17px] font-semibold leading-tight tracking-tight text-stone-950">
+      <p className="mt-2 text-[17px] font-semibold leading-tight tracking-tight text-jeffreys-graphite">
         {value}
       </p>
     </div>
@@ -141,18 +141,18 @@ function getStatusTitle(order: OrderDetails) {
 
 function getStatusTone(order: OrderDetails) {
   if (order.status === "READY") {
-    return "bg-[#e4f1df] text-[#315c38]";
+    return "bg-[#e6f4e3] text-[#2d6b30]";
   }
 
   if (order.status === "PREPARING") {
-    return "bg-[#e9f2e3] text-[#3f6844]";
+    return "bg-[#e6f4e3] text-[#2d6b30]";
   }
 
   if (order.status === "CANCELLED") {
-    return "bg-stone-200 text-stone-600";
+    return "bg-stone-100 text-stone-500";
   }
 
-  return "bg-[#eef5e8] text-[#456b44]";
+  return "bg-jeffreys-fog text-stone-500";
 }
 
 export function OrderStatusClient({
@@ -204,7 +204,7 @@ export function OrderStatusClient({
         </section>
       }
     >
-      <section className="rounded-[34px] border border-white/75 bg-[rgba(255,255,255,0.78)] px-5 py-5 shadow-[0_16px_34px_rgba(31,23,18,0.08)] backdrop-blur-[22px]">
+      <section className="rounded-[34px] border border-black/[0.06] bg-white px-5 py-5 shadow-[0_16px_34px_rgba(0,0,0,0.06)]">
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-stone-400">
@@ -228,7 +228,7 @@ export function OrderStatusClient({
           </div>
         </div>
 
-        <div className="mt-5 rounded-[24px] bg-[#f8f2ec] px-4 py-4">
+        <div className="mt-5 rounded-[24px] bg-jeffreys-fog px-4 py-4">
           <div className="flex items-center justify-between gap-4">
             <div>
               <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-stone-400">
@@ -247,7 +247,7 @@ export function OrderStatusClient({
         </div>
       </section>
 
-      <section className="mt-4 rounded-[34px] border border-white/75 bg-[rgba(255,255,255,0.78)] px-5 py-5 shadow-[0_16px_34px_rgba(31,23,18,0.08)] backdrop-blur-[22px]">
+      <section className="mt-4 rounded-[34px] border border-black/[0.06] bg-white px-5 py-5 shadow-[0_16px_34px_rgba(0,0,0,0.06)]">
         <div className="flex items-center justify-between gap-4">
           <h2 className="text-[25px] font-medium leading-none tracking-tight text-stone-950">
             Процесс
@@ -270,10 +270,10 @@ export function OrderStatusClient({
                   className={cn(
                     "flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[13px] font-semibold transition",
                     isChecked
-                      ? "bg-[#5f7f58] text-white"
+                      ? "bg-jeffreys-graphite text-white"
                       : isActive
-                        ? "bg-[#dfeedd] text-[#4f784d]"
-                        : "bg-[#f4eee8] text-stone-400",
+                        ? "bg-[#2d6b30] text-white"
+                        : "bg-jeffreys-fog text-stone-400",
                   )}
                 >
                   {isChecked ? <CheckIcon /> : index + 1}
@@ -283,15 +283,15 @@ export function OrderStatusClient({
                   className={cn(
                     "flex min-h-12 flex-1 items-center justify-between rounded-[20px] px-4 transition",
                     isActive
-                      ? "bg-[#edf5e9] text-[#4f784d]"
+                      ? "bg-[#e6f4e3] text-[#2d6b30]"
                       : isChecked
-                        ? "bg-[#dfe6d8] text-[#425c3d]"
-                        : "bg-[#f8f2ec] text-stone-900",
+                        ? "bg-stone-100 text-stone-500"
+                        : "bg-jeffreys-fog text-stone-900",
                   )}
                 >
                   <p className="text-[16px] font-semibold tracking-tight">{step.title}</p>
                   {isActive ? (
-                    <span className="text-[13px] font-medium text-[#5f835e]">сейчас</span>
+                    <span className="text-[13px] font-medium text-[#2d6b30]">сейчас</span>
                   ) : null}
                 </div>
               </div>
@@ -300,7 +300,7 @@ export function OrderStatusClient({
         </div>
       </section>
 
-      <section className="mt-4 rounded-[34px] border border-white/75 bg-[rgba(255,255,255,0.74)] px-5 py-5 shadow-[0_16px_34px_rgba(31,23,18,0.07)] backdrop-blur-[22px]">
+      <section className="mt-4 rounded-[34px] border border-black/[0.06] bg-white px-5 py-5 shadow-[0_16px_34px_rgba(0,0,0,0.055)]">
         <div className="flex items-center justify-between gap-4">
           <h2 className="text-[25px] font-medium leading-none tracking-tight text-stone-950">
             Состав
@@ -337,7 +337,7 @@ export function OrderStatusClient({
 
       <Link
         href="/menu#quick-search"
-        className="mt-5 flex min-h-14 w-full items-center justify-center rounded-full bg-[#6b4a38] px-5 py-4 text-[17px] font-semibold text-white shadow-[0_18px_38px_rgba(91,64,45,0.2)] transition hover:bg-[#5f4131] active:scale-[0.98]"
+        className="mt-5 flex min-h-14 w-full items-center justify-center rounded-full bg-brand-600 px-5 py-4 text-[17px] font-semibold text-white shadow-[0_18px_38px_rgba(213,31,54,0.2)] transition hover:bg-brand-700 active:scale-[0.98]"
       >
         Сделать новый заказ
       </Link>
