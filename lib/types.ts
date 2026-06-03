@@ -12,10 +12,11 @@ export type ProductKind = "FOOD" | "DRINK";
 export type ViewerSummary = {
   id: string;
   name: string;
-  email: string;
+  phone: string;
+  email: string | null;
+  phoneVerified: boolean;
   birthDate: string | null;
   gender: string | null;
-  phone: string | null;
 };
 
 export type ProductSummary = {

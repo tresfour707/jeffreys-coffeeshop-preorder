@@ -38,7 +38,7 @@ type CreateDemoPaymentInput = {
   method: PublicPaymentMethod;
   userId: string;
   customerName: string;
-  customerEmail: string;
+  customerEmail: string | null;
 };
 
 type CancelActor = "CUSTOMER" | "STAFF";

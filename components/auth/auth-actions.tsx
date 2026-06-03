@@ -26,7 +26,7 @@ export function AuthActions({ viewer }: AuthActionsProps) {
       <div className="rounded-[24px] border border-stone-200 bg-white px-4 py-3 text-center text-sm text-stone-600 md:rounded-full md:text-left">
         <span className="font-semibold text-stone-900">{viewer.name}</span>
         <span className="mt-1 block text-xs text-stone-500 md:ml-2 md:mt-0 md:inline md:text-sm">
-          {viewer.email}
+          {viewer.phone.replace(/^7(\d{3})(\d{3})(\d{2})(\d{2})$/, "+7 ($1) $2-$3-$4")}
         </span>
       </div>
       <SignOutButton className="btn-secondary disabled:cursor-wait disabled:opacity-60" />

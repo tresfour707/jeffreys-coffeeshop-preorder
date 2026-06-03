@@ -1,29 +1,27 @@
 import { NextResponse } from "next/server";
 
 import { AppError } from "@/lib/app-error";
-import {
-  createSession,
-  hashPassword,
-  normalizeEmail,
-} from "@/lib/auth";
+import { generateOtpCode, hashPassword, normalizePhone } from "@/lib/auth";
 import { toErrorResponse } from "@/lib/api-response";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
+const OTP_TTL_MINUTES = 10;
+
 export async function POST(request: Request) {
   try {
     const body = await request.json().catch(() => null);
     const name = typeof body?.name === "string" ? body.name.trim() : "";
-    const email = typeof body?.email === "string" ? normalizeEmail(body.email) : "";
+    const phone = typeof body?.phone === "string" ? normalizePhone(body.phone) : "";
     const password = typeof body?.password === "string" ? body.password : "";
 
     if (name.length < 2) {
       throw new AppError("Укажите имя не короче 2 символов.", 400);
     }
 
-    if (!email.includes("@")) {
-      throw new AppError("Укажите корректный email.", 400);
+    if (phone.length !== 11 || !phone.startsWith("7")) {
+      throw new AppError("Укажите корректный номер телефона.", 400);
     }
 
     if (password.length < 6) {
@@ -31,34 +29,32 @@ export async function POST(request: Request) {
     }
 
     const existingUser = await prisma.user.findUnique({
-      where: {
-        email,
-      },
-      select: {
-        id: true,
-      },
+      where: { phone },
+      select: { id: true },
     });
 
     if (existingUser) {
-      throw new AppError("Аккаунт с таким email уже существует.", 409);
+      throw new AppError("Аккаунт с таким номером уже существует.", 409);
     }
 
     const user = await prisma.user.create({
       data: {
         name,
-        email,
+        phone,
         passwordHash: hashPassword(password),
       },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-      },
+      select: { id: true, phone: true },
     });
 
-    await createSession(user.id);
+    const code = generateOtpCode();
+    const expiresAt = new Date(Date.now() + OTP_TTL_MINUTES * 60 * 1000);
 
-    return NextResponse.json(user, { status: 201 });
+    await prisma.otpCode.deleteMany({ where: { phone, purpose: "VERIFY" } });
+    await prisma.otpCode.create({
+      data: { phone, code, purpose: "VERIFY", expiresAt },
+    });
+
+    return NextResponse.json({ phone: user.phone, demoCode: code }, { status: 201 });
   } catch (error) {
     return toErrorResponse(error);
   }
