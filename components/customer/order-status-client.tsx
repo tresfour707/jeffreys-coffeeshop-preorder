@@ -57,14 +57,13 @@ function ProgressBar({ order }: { order: OrderDetails }) {
   const fill      = getProgressFill(order);
   const isReady   = order.status === "READY";
   const isCancelled = order.status === "CANCELLED";
-  const isActive  = !isReady && !isCancelled;
 
-  const fillColor = isReady ? "#2d6b30" : isCancelled ? "#ccc8c3" : "#c01931";
+  const fillColor = isReady ? "#6f9a61" : isCancelled ? "#b7b0a8" : "#8fa878";
 
   return (
     <div
-      className="relative h-[34px] w-full overflow-hidden rounded-full"
-      style={{ background: "#ede9e5" }}
+      className="relative h-[18px] w-full overflow-hidden rounded-full"
+      style={{ background: "rgba(143, 168, 120, 0.18)" }}
       role="progressbar"
       aria-valuenow={fill}
       aria-valuemin={0}
@@ -74,36 +73,7 @@ function ProgressBar({ order }: { order: OrderDetails }) {
       <div
         className="absolute inset-y-0 left-0 rounded-full transition-[width] duration-700 ease-out"
         style={{ width: `${fill}%`, background: fillColor }}
-      >
-        {/* Diagonal stripes — translateX animation for seamless loop */}
-        {isActive ? (
-          <div
-            className="absolute inset-y-0"
-            style={{
-              /* Extra-wide so edges never show during animation */
-              left: "-30px",
-              right: "-30px",
-              backgroundImage: [
-                "repeating-linear-gradient(",
-                "  -45deg,",
-                "  transparent 0px, transparent 9px,",
-                "  rgba(255,255,255,0.13) 9px, rgba(255,255,255,0.13) 18px",
-                ")",
-              ].join(""),
-              animation: "progressStripe 1.5s linear infinite",
-            }}
-          />
-        ) : null}
-
-        {/* Shine — top-to-bottom highlight for pill depth */}
-        <div
-          className="pointer-events-none absolute inset-0 rounded-full"
-          style={{
-            background:
-              "linear-gradient(to bottom, rgba(255,255,255,0.22) 0%, transparent 50%)",
-          }}
-        />
-      </div>
+      />
     </div>
   );
 }

@@ -32,6 +32,7 @@ type LocationOption = {
 };
 
 const LOCATION_STORAGE_KEY = "jeffreys-preorder-location";
+const THEME_STORAGE_KEY = "jeffreys-menu-theme";
 
 const locationOptions: LocationOption[] = [
   {
@@ -380,27 +381,46 @@ function AccountMenuRow({
   label,
   icon,
   onNavigate,
+  variant = "row",
 }: {
   href: string;
   label: string;
   icon: ReactNode;
   onNavigate: () => void;
+  variant?: "row" | "tile";
 }) {
+  const isTile = variant === "tile";
+
   return (
     <Link
       href={href}
       onClick={onNavigate}
-      className="flex min-h-[54px] items-center justify-between gap-4 rounded-[18px] px-2 text-jeffreys-graphite transition active:scale-[0.99] active:bg-white/72"
+      className={cn(
+        "customer-account-row text-jeffreys-graphite transition active:scale-[0.99] active:bg-white/72",
+        isTile
+          ? "flex min-h-[134px] flex-col items-start justify-between rounded-[24px] px-4 py-4"
+          : "flex min-h-[58px] items-center justify-between gap-4 rounded-[20px] px-4",
+      )}
     >
-      <span className="flex min-w-0 items-center gap-3">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[12px] bg-brand-50 text-brand-700">
+      <span
+        className={cn(
+          "min-w-0",
+          isTile ? "flex flex-col items-start gap-4" : "flex items-center gap-3",
+        )}
+      >
+        <span className="customer-account-row-icon flex h-10 w-10 shrink-0 items-center justify-center rounded-[13px] bg-brand-50 text-brand-700">
           {icon}
         </span>
-        <span className="block truncate text-[19px] font-semibold leading-tight tracking-tight text-jeffreys-graphite">
+        <span
+          className={cn(
+            "customer-account-row-label block truncate font-semibold leading-tight tracking-tight text-jeffreys-graphite",
+            isTile ? "text-[17px]" : "text-[18px]",
+          )}
+        >
           {label}
         </span>
       </span>
-      <AccountChevron />
+      {isTile ? null : <AccountChevron />}
     </Link>
   );
 }
@@ -457,6 +477,10 @@ export function CustomerMobileShell({
   const [activePanel, setActivePanel] = useState<"menu" | "account" | "locations" | null>(null);
   const [selectedLocationId, setSelectedLocationId] = useState(defaultLocationId);
   const [pendingLocationId, setPendingLocationId] = useState(defaultLocationId);
+  const [localChrome, setLocalChrome] = useState<"light" | "dark">(chrome);
+  const hasExternalThemeToggle = typeof onThemeToggle === "function";
+  const effectiveChrome = hasExternalThemeToggle ? chrome : localChrome;
+  const isDarkChrome = effectiveChrome === "dark";
 
   useEffect(() => {
     const searchParams =
@@ -466,6 +490,18 @@ export function CustomerMobileShell({
 
     setActivePanel(searchParams?.get("panel") === "account" ? "account" : null);
   }, [pathname]);
+
+  useEffect(() => {
+    if (hasExternalThemeToggle || typeof window === "undefined") {
+      return;
+    }
+
+    const storedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
+
+    if (storedTheme === "light" || storedTheme === "dark") {
+      setLocalChrome(storedTheme);
+    }
+  }, [hasExternalThemeToggle]);
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -510,10 +546,25 @@ export function CustomerMobileShell({
   const isMenuOpen = activePanel === "menu";
   const isAccountOpen = activePanel === "account";
   const isLocationsOpen = activePanel === "locations";
-  const isDarkChrome = chrome === "dark";
-  const hasThemeToggle = typeof onThemeToggle === "function";
   const selectedLocation = getLocationById(selectedLocationId);
   const pendingLocation = getLocationById(pendingLocationId);
+
+  function handleThemeToggle() {
+    if (hasExternalThemeToggle) {
+      onThemeToggle?.();
+      return;
+    }
+
+    setLocalChrome((currentChrome) => {
+      const nextChrome = currentChrome === "dark" ? "light" : "dark";
+
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem(THEME_STORAGE_KEY, nextChrome);
+      }
+
+      return nextChrome;
+    });
+  }
 
   function commitLocationSelection() {
     setSelectedLocationId(pendingLocation.id);
@@ -528,72 +579,44 @@ export function CustomerMobileShell({
   return (
     <main
       className={cn(
-        "min-h-screen",
-        hasThemeToggle
-          ? isDarkChrome
-            ? "bg-black text-[#f4ecdc]"
-            : "bg-[#eef7f9] text-brand-900"
-          : isDarkChrome
-            ? "bg-black text-[#f4ecdc]"
-            : "",
+        "customer-theme-root min-h-screen",
+        isDarkChrome
+          ? "customer-theme-dark bg-black text-[#f4ecdc]"
+          : "customer-theme-light bg-[#eef7f9] text-brand-900",
       )}
     >
-      {hasThemeToggle ? (
-        <div
-          aria-hidden="true"
-          className={cn(
-            "customer-menu-glass-backdrop",
-            !isDarkChrome ? "customer-menu-glass-backdrop-light" : "",
-            menuChromeExpanded ? "customer-menu-glass-backdrop-expanded" : "",
-          )}
-        />
-      ) : null}
+      <div
+        aria-hidden="true"
+        className={cn(
+          "customer-menu-glass-backdrop",
+          !isDarkChrome ? "customer-menu-glass-backdrop-light" : "",
+          menuChromeExpanded ? "customer-menu-glass-backdrop-expanded" : "",
+        )}
+      />
 
       <div className="fixed inset-x-0 top-0 z-50 w-full">
         <div
           className={cn(
             "customer-top-island",
-            hasThemeToggle
-              ? cn(
-                  "customer-top-island-menu",
-                  !isDarkChrome ? "customer-top-island-menu-light" : "",
-                )
-              : isDarkChrome
-                ? "customer-top-island-dark"
-                : "",
+            "customer-top-island-menu",
+            !isDarkChrome ? "customer-top-island-menu-light" : "",
           )}
         >
           <div
             className={cn(
               "customer-top-island-inner",
-              hasThemeToggle
-                ? cn(
-                    "customer-top-island-inner-menu",
-                    isDarkChrome ? "customer-top-island-inner-menu-dark" : "",
-                  )
-                : isDarkChrome
-                  ? "customer-top-island-inner-dark"
-                  : "",
+              "customer-top-island-inner-menu",
+              isDarkChrome ? "customer-top-island-inner-menu-dark" : "",
             )}
           >
-            {hasThemeToggle ? (
-              <button
-                type="button"
-                onClick={() => setActivePanel("account")}
-                aria-label={viewer ? "Открыть профиль" : "Открыть вход и регистрацию"}
-                className="flex h-14 w-[60px] shrink-0 items-center justify-start"
-              >
-                <BrandLogoIcon className={isDarkChrome ? "customer-brand-logo-ivory" : ""} />
-              </button>
-            ) : isDarkChrome ? (
-              <Link
-                href="/menu"
-                aria-label="Открыть главный экран"
-                className="flex h-14 w-[60px] shrink-0 items-center justify-start"
-              >
-                <BrandLogoIcon className="customer-brand-logo-ivory" />
-              </Link>
-            ) : null}
+            <button
+              type="button"
+              onClick={() => setActivePanel("account")}
+              aria-label={viewer ? "Открыть профиль" : "Открыть вход и регистрацию"}
+              className="flex h-14 w-[60px] shrink-0 items-center justify-start"
+            >
+              <BrandLogoIcon className={isDarkChrome ? "customer-brand-logo-ivory" : ""} />
+            </button>
 
             <button
               type="button"
@@ -601,23 +624,16 @@ export function CustomerMobileShell({
               aria-label="Выбрать кофейню"
               className={cn(
                 "group min-w-0 flex-1 transition active:scale-[0.99]",
-                isDarkChrome || hasThemeToggle ? "text-center" : "text-left",
+                "text-center",
                 isDarkChrome ? "text-[#f4ecdc]" : "text-brand-900",
               )}
             >
-              {!isDarkChrome && !hasThemeToggle ? (
-                <span className="block text-[10px] font-extrabold uppercase leading-none tracking-[0.18em] text-brand-600">
-                  Jeffrey&apos;s Coffeeshop
-                </span>
-              ) : null}
               <span
                 className={cn(
                   "flex min-w-0 items-center gap-1.5 font-semibold leading-none tracking-tight",
                   isDarkChrome
                     ? "mt-0 justify-center text-[17px] text-[#f4ecdc]"
-                    : hasThemeToggle
-                      ? "mt-0 justify-center text-[17px] text-brand-900"
-                      : "mt-2 text-[19px] text-jeffreys-graphite",
+                    : "mt-0 justify-center text-[17px] text-brand-900",
                 )}
               >
                 <PinIcon
@@ -636,9 +652,7 @@ export function CustomerMobileShell({
                   "customer-location-marquee mt-1.5 font-medium leading-none",
                   isDarkChrome
                     ? "text-[11px] text-[#f4ecdc]/58"
-                    : hasThemeToggle
-                      ? "text-[11px] text-brand-900/58"
-                      : "text-[13px] text-stone-500",
+                    : "text-[11px] text-brand-900/58",
                 )}
               >
                 <span className="customer-location-marquee-track">
@@ -654,39 +668,17 @@ export function CustomerMobileShell({
 
             <button
               type="button"
-              onClick={() => {
-                if (hasThemeToggle) {
-                  onThemeToggle?.();
-                  return;
-                }
-
-                setActivePanel("account");
-              }}
-              aria-label={hasThemeToggle ? "Переключить тему" : viewer ? "Открыть профиль" : "Открыть вход и регистрацию"}
+              onClick={handleThemeToggle}
+              aria-label="Переключить тему"
               className={cn(
                 "shrink-0 transition active:scale-[0.96]",
-                hasThemeToggle
-                  ? cn(
-                      "inline-flex h-10 w-10 justify-self-end items-center justify-center rounded-full backdrop-blur-[18px]",
-                      isDarkChrome
-                        ? "bg-[#f4ecdc]/10 text-[#f4ecdc]/86 ring-1 ring-[#f4ecdc]/10"
-                        : "bg-white/78 text-brand-900 shadow-[0_8px_20px_rgba(7,56,74,0.12)] ring-1 ring-brand-900/10",
-                    )
-                  : isDarkChrome
-                    ? "inline-flex h-11 w-16 items-center justify-center gap-1 rounded-full bg-white/16 px-3 text-[18px] font-semibold leading-none text-[#ffef3d] ring-1 ring-white/18 backdrop-blur-[18px]"
-                    : "flex h-12 w-12 items-center justify-center rounded-[16px] border border-black/[0.055] bg-white shadow-[0_10px_22px_rgba(0,0,0,0.06)] hover:border-brand-200",
+                "inline-flex h-10 w-10 justify-self-end items-center justify-center rounded-full backdrop-blur-[18px]",
+                isDarkChrome
+                  ? "bg-[#f4ecdc]/10 text-[#f4ecdc]/86 ring-1 ring-[#f4ecdc]/10"
+                  : "bg-white/78 text-brand-900 shadow-[0_8px_20px_rgba(7,56,74,0.12)] ring-1 ring-brand-900/10",
               )}
             >
-              {hasThemeToggle ? (
-                <ThemeToggleIcon theme={isDarkChrome ? "dark" : "light"} />
-              ) : isDarkChrome ? (
-                <>
-                  <span>64</span>
-                  <span className="text-[17px] leading-none">●</span>
-                </>
-              ) : (
-                <AccountIcon />
-              )}
+              <ThemeToggleIcon theme={isDarkChrome ? "dark" : "light"} />
             </button>
           </div>
         </div>
@@ -695,7 +687,7 @@ export function CustomerMobileShell({
       <div
         className={cn(
           "customer-page",
-          hasThemeToggle || isDarkChrome ? "pt-0" : "pt-[126px]",
+          hasExternalThemeToggle ? "pt-0" : "pt-[96px]",
         )}
       >
         <div className={cn("pb-10 pt-4", className)}>
@@ -732,12 +724,29 @@ export function CustomerMobileShell({
             isMenuOpen ? "translate-x-0" : "-translate-x-full",
           )}
         >
-          <div className="pointer-events-none absolute inset-0 bg-white/82" />
-          <div className="pointer-events-none absolute inset-0">
-            <div className="absolute left-0 top-0 h-full w-[6px] bg-brand-600" />
-            <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(7,56,74,0.065)_0%,rgba(255,255,255,0)_36%),linear-gradient(180deg,rgba(255,255,255,0.84)_0%,rgba(243,243,241,0.74)_100%)]" />
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(9,9,9,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(9,9,9,0.035)_1px,transparent_1px)] bg-[length:34px_34px] opacity-45" />
-          </div>
+              <div
+                className={cn(
+                  "pointer-events-none absolute inset-0",
+                  isDarkChrome ? "bg-[#061213]/92" : "bg-white/82",
+                )}
+              />
+              <div className="pointer-events-none absolute inset-0">
+                <div className={cn("absolute left-0 top-0 h-full w-[6px]", isDarkChrome ? "bg-[#d9c7aa]" : "bg-brand-600")} />
+                <div
+                  className={cn(
+                    "absolute inset-0",
+                    isDarkChrome
+                      ? "bg-[radial-gradient(circle_at_18%_10%,rgba(244,236,220,0.12),transparent_34%),linear-gradient(180deg,rgba(5,17,20,0.88)_0%,rgba(5,17,20,0.96)_100%)]"
+                      : "bg-[linear-gradient(135deg,rgba(7,56,74,0.065)_0%,rgba(255,255,255,0)_36%),linear-gradient(180deg,rgba(255,255,255,0.84)_0%,rgba(243,243,241,0.74)_100%)]",
+                  )}
+                />
+                <div
+                  className={cn(
+                    "absolute inset-0 bg-[linear-gradient(rgba(9,9,9,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(9,9,9,0.035)_1px,transparent_1px)] bg-[length:34px_34px] opacity-45",
+                    isDarkChrome ? "opacity-10" : "",
+                  )}
+                />
+              </div>
 
           <div className="relative z-10 h-full overflow-y-scroll overscroll-y-contain px-5 pb-24 pt-6 [-webkit-overflow-scrolling:touch] [touch-action:pan-y]">
             <div className="min-h-[calc(100dvh+96px)]">
@@ -750,7 +759,7 @@ export function CustomerMobileShell({
                   type="button"
                   onClick={() => setActivePanel(null)}
                   aria-label="Закрыть меню"
-                  className="absolute right-0 top-0 flex h-12 w-12 items-center justify-center text-[34px] font-light leading-none text-jeffreys-graphite"
+                  className={cn("absolute right-0 top-0 flex h-12 w-12 items-center justify-center text-[34px] font-light leading-none", isDarkChrome ? "text-[#f4ecdc]" : "text-jeffreys-graphite")}
                 >
                   ×
                 </button>
@@ -923,24 +932,31 @@ export function CustomerMobileShell({
           )}
         >
           <div className="pointer-events-none absolute inset-0 bg-white/82" />
-          <div className="pointer-events-none absolute inset-0">
-            <div className="absolute right-0 top-0 h-full w-[6px] bg-brand-600" />
-            <div className="absolute inset-0 bg-[linear-gradient(225deg,rgba(7,56,74,0.06)_0%,rgba(255,255,255,0)_38%),linear-gradient(180deg,rgba(255,255,255,0.86)_0%,rgba(243,243,241,0.76)_100%)]" />
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(9,9,9,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(9,9,9,0.035)_1px,transparent_1px)] bg-[length:34px_34px] opacity-42" />
+          <div
+            className={cn(
+              "pointer-events-none absolute inset-0",
+              isDarkChrome ? "bg-[#061213]/92" : "",
+            )}
+          >
+            <div className={cn("absolute right-0 top-0 h-full w-[6px]", isDarkChrome ? "bg-[#d9c7aa]" : "bg-brand-600")} />
+            <div
+              className={cn(
+                "absolute inset-0",
+                isDarkChrome
+                  ? "bg-[radial-gradient(circle_at_20%_12%,rgba(244,236,220,0.11),transparent_34%),linear-gradient(180deg,rgba(5,17,20,0.88)_0%,rgba(5,17,20,0.96)_100%)]"
+                  : "bg-[linear-gradient(225deg,rgba(7,56,74,0.06)_0%,rgba(255,255,255,0)_38%),linear-gradient(180deg,rgba(255,255,255,0.86)_0%,rgba(243,243,241,0.76)_100%)]",
+              )}
+            />
           </div>
 
           <div className="relative z-10 h-full overflow-y-scroll overscroll-y-contain px-5 pb-24 pt-6 [-webkit-overflow-scrolling:touch] [touch-action:pan-y]">
             <div className="min-h-[calc(100dvh+96px)]">
-              <div className="relative flex min-h-12 items-center justify-center pt-14">
-                <h2 className="text-[30px] font-medium leading-none tracking-tight text-stone-950">
-                  Аккаунт
-                </h2>
-
+              <div className="relative flex min-h-12 items-center justify-end">
                 <button
                   type="button"
                   onClick={() => setActivePanel(null)}
                   aria-label="Закрыть аккаунт"
-                  className="absolute right-0 top-0 flex h-12 w-12 items-center justify-center text-[34px] font-light leading-none text-jeffreys-graphite"
+                  className={cn("absolute right-0 top-0 flex h-12 w-12 items-center justify-center text-[34px] font-light leading-none", isDarkChrome ? "text-[#f4ecdc]" : "text-jeffreys-graphite")}
                 >
                   ×
                 </button>
@@ -949,10 +965,10 @@ export function CustomerMobileShell({
               {!viewer ? (
                 <div className="flex min-h-[70vh] flex-col justify-center pb-8 pt-10 text-center">
                   <div className="mx-auto max-w-[290px]">
-                    <h2 className="text-[30px] font-medium leading-none tracking-tight text-stone-950">
+                    <h2 className={cn("text-[30px] font-medium leading-none tracking-tight", isDarkChrome ? "text-[#f4ecdc]" : "text-stone-950")}>
                       Авторизация
                     </h2>
-                    <p className="mt-5 text-sm leading-6 text-stone-600">
+                    <p className={cn("mt-5 text-sm leading-6", isDarkChrome ? "text-[#f4ecdc]/62" : "text-stone-600")}>
                       Войдите или создайте аккаунт, чтобы оформить заказ.
                     </p>
                   </div>
@@ -961,14 +977,22 @@ export function CustomerMobileShell({
                     <Link
                       href="/sign-in?next=%2Fmenu"
                       onClick={() => setActivePanel(null)}
-                      className="flex min-h-14 items-center justify-center rounded-[16px] bg-brand-600 px-6 py-4 text-[17px] font-extrabold tracking-tight text-white shadow-[0_18px_36px_rgba(7,56,74,0.22)]"
+                      className={cn(
+                        "flex min-h-14 items-center justify-center rounded-[16px] px-6 py-4 text-[17px] font-extrabold tracking-tight shadow-[0_18px_36px_rgba(7,56,74,0.22)]",
+                        isDarkChrome ? "bg-[#d9c7aa] text-[#071214]" : "bg-brand-600 text-white",
+                      )}
                     >
                       Войти
                     </Link>
                     <Link
                       href="/sign-up?next=%2Fmenu"
                       onClick={() => setActivePanel(null)}
-                      className="flex min-h-14 items-center justify-center rounded-[16px] border border-black/10 bg-white/86 px-6 py-4 text-[17px] font-bold tracking-tight text-jeffreys-graphite shadow-[0_14px_32px_rgba(0,0,0,0.075)] backdrop-blur-xl"
+                      className={cn(
+                        "flex min-h-14 items-center justify-center rounded-[16px] border px-6 py-4 text-[17px] font-bold tracking-tight shadow-[0_14px_32px_rgba(0,0,0,0.075)] backdrop-blur-xl",
+                        isDarkChrome
+                          ? "border-[#f4ecdc]/10 bg-[#f4ecdc]/8 text-[#f4ecdc]"
+                          : "border-black/10 bg-white/86 text-jeffreys-graphite",
+                      )}
                     >
                       Создать аккаунт
                     </Link>
@@ -978,38 +1002,51 @@ export function CustomerMobileShell({
                 <div className="pb-8 pt-12">
                   <div className="mx-auto flex w-full max-w-[350px] flex-col">
                     <div className="text-center">
-                      <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-[24px] bg-brand-50 text-[28px] font-bold tracking-tight text-brand-700 shadow-[0_16px_38px_rgba(7,56,74,0.1)] ring-1 ring-brand-100">
-                        {getViewerInitials(viewer)}
-                      </div>
-                      <h2 className="mt-5 text-[28px] font-semibold leading-none tracking-tight text-stone-950">
+                      <h2 className={cn("text-[30px] font-semibold leading-none tracking-tight", isDarkChrome ? "text-[#f4ecdc]" : "text-stone-950")}>
                         {viewer.name}
                       </h2>
+                      <p className={cn("mt-3 text-[17px] font-medium leading-none", isDarkChrome ? "text-[#f4ecdc]/58" : "text-stone-500")}>
+                        +{viewer.phone.replace(/^7/, "7 ")}
+                      </p>
+                      <div
+                        className={cn(
+                          "mt-7 inline-flex min-h-11 items-center justify-center gap-2 rounded-[16px] px-5 text-[15px] font-bold",
+                          isDarkChrome ? "bg-[#d9c7aa]/14 text-[#f4ecdc]" : "bg-brand-50 text-brand-700",
+                        )}
+                      >
+                        <span>★</span>
+                        <span>{viewer.bonusBalance} бонусов на счёте</span>
+                      </div>
                     </div>
 
-                    <nav className="mt-8 space-y-2">
-                      <AccountMenuRow
-                        href="/profile"
-                        label="Личные данные"
-                        icon={<AccountPersonalIcon />}
-                        onNavigate={() => setActivePanel(null)}
-                      />
-                      <AccountMenuRow
-                        href="/orders"
-                        label="История покупок"
-                        icon={<AccountHistoryIcon />}
-                        onNavigate={() => setActivePanel(null)}
-                      />
-                      <AccountMenuRow
-                        href="/payment-methods"
-                        label="Способы оплаты"
-                        icon={<AccountPaymentIcon />}
-                        onNavigate={() => setActivePanel(null)}
-                      />
+                    <nav className="mt-8">
+                      <div className="grid grid-cols-2 gap-3">
+                        <AccountMenuRow
+                          href="/orders"
+                          label="История покупок"
+                          icon={<AccountHistoryIcon />}
+                          onNavigate={() => setActivePanel(null)}
+                          variant="tile"
+                        />
+                        <AccountMenuRow
+                          href="/payment-methods"
+                          label="Способы оплаты"
+                          icon={<AccountPaymentIcon />}
+                          onNavigate={() => setActivePanel(null)}
+                          variant="tile"
+                        />
+                      </div>
                     </nav>
 
-                    <div className="pt-10">
-                      <SignOutButton className="mx-auto flex min-h-11 items-center justify-center gap-2 rounded-[16px] px-6 text-[17px] font-bold tracking-tight text-brand-700 disabled:cursor-wait disabled:opacity-60">
-                        <span className="flex h-8 w-8 items-center justify-center rounded-[11px] bg-brand-50 text-brand-700">
+                    <div className="pt-8">
+                      <SignOutButton
+                        className={cn(
+                          "customer-account-row customer-signout-row mx-auto flex min-h-12 w-full items-center justify-center gap-3 rounded-[20px] px-6 text-[17px] font-bold tracking-tight disabled:cursor-wait disabled:opacity-60",
+                        )}
+                      >
+                        <span
+                          className="customer-account-row-icon customer-signout-row-icon flex h-9 w-9 items-center justify-center rounded-[12px]"
+                        >
                           <AccountSignOutIcon />
                         </span>
                       </SignOutButton>

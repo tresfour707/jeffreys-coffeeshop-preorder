@@ -138,14 +138,14 @@ function ActiveOrderTracker({
   const isDark = theme === "dark";
 
   return (
-    <section className="mt-5 px-5">
+    <section className="px-5">
       <Link
         href={href}
         className={cn(
-          "group flex min-h-[72px] items-center gap-4 rounded-[20px] border px-4 py-3 no-underline backdrop-blur-[22px] transition active:scale-[0.99]",
+          "group flex min-h-[72px] items-center gap-4 rounded-[20px] border-0 px-4 py-3 no-underline ring-0 transition active:scale-[0.99]",
           isDark
-            ? "border-[#f4ecdc]/8 bg-[#101719]/86 text-[#f4ecdc] shadow-[0_18px_42px_rgba(0,0,0,0.3)]"
-            : "border-brand-900/8 bg-white/72 text-brand-900 shadow-[0_16px_34px_rgba(7,56,74,0.08)]",
+            ? "bg-transparent text-[#f4ecdc] shadow-none"
+            : "bg-transparent text-brand-900 shadow-none",
         )}
       >
         <span className={cn("shrink-0 text-[22px] font-semibold leading-none tracking-tight", isDark ? "text-[#f4ecdc]" : "text-brand-900")}>
@@ -172,8 +172,8 @@ function ActiveOrderTracker({
 
         <span
           className={cn(
-            "inline-flex shrink-0 rounded-full px-3 py-1.5 text-[13px] font-semibold leading-none",
-            isDark ? "bg-[#f4ecdc]/10 text-[#f4ecdc]/78" : "bg-brand-900/7 text-brand-900/68",
+            "inline-flex shrink-0 px-1 py-1.5 text-[13px] font-semibold leading-none",
+            isDark ? "text-[#f4ecdc]/78" : "text-brand-900/72",
           )}
         >
           {hasMultipleOrders ? getActiveOrdersLabel(sortedOrders.length) : "Открыть"}
@@ -215,7 +215,7 @@ function HeroPurchasedShowcase({
 
   return (
     <section
-      className="relative -mx-4 overflow-hidden px-4 pb-3 pt-[82px]"
+      className="relative -mx-4 overflow-hidden px-4 pb-3 pt-7"
     >
       <div className="relative z-10">
         <div className="flex items-end justify-between gap-4 px-1">
@@ -461,15 +461,17 @@ export function MenuClient({
       contentClassName="mt-0"
       className="pb-0 pt-0"
     >
-      <HeroPurchasedShowcase
-        products={purchasedProducts}
-        fallbackProducts={products}
-        onOpen={setActiveProduct}
-        theme={menuTheme}
-        hasAccount={viewer !== null}
-      />
+      <div className="pt-[84px]">
+        <ActiveOrderTracker orders={trackableOrders} theme={menuTheme} />
 
-      <ActiveOrderTracker orders={trackableOrders} theme={menuTheme} />
+        <HeroPurchasedShowcase
+          products={purchasedProducts}
+          fallbackProducts={products}
+          onOpen={setActiveProduct}
+          theme={menuTheme}
+          hasAccount={viewer !== null}
+        />
+      </div>
 
       <section
         ref={categoryNavRef}
