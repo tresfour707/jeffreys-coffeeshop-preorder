@@ -73,13 +73,14 @@ export function DemoPaymentClient({
       className="pb-40"
       header={
         <section className="rounded-[22px] border border-black/[0.06] bg-white px-5 py-5 shadow-[0_16px_34px_rgba(0,0,0,0.06)]">
-          <p className="kicker text-brand-600">Demo payment</p>
+          <p className="text-[13px] font-bold uppercase tracking-[0.18em] text-brand-600">
+            Jeffrey&apos;s Coffeeshop
+          </p>
           <h1 className="mt-3 text-[36px] font-semibold leading-[0.94] tracking-tight text-jeffreys-graphite">
             Подтвердите оплату
           </h1>
-          <p className="mt-3 text-sm leading-6 text-stone-600">
-            Это имитация внешнего шага оплаты. Только после `Success` заказ получит
-            номер и попадёт в общую очередь.
+          <p className="mt-3 text-sm leading-6 text-stone-500">
+            Проверьте данные и подтвердите платёж. После подтверждения заказ сразу попадёт в очередь.
           </p>
         </section>
       }
@@ -93,7 +94,7 @@ export function DemoPaymentClient({
                 {payment.customerName ?? viewer.name}
               </h2>
               <p className="mt-2 text-sm text-stone-500">
-                {payment.customerEmail ?? viewer.email}
+                {viewer.phone.replace(/^7(\d{3})(\d{3})(\d{2})(\d{2})$/, "+7 ($1) $2-$3-$4")}
               </p>
             </div>
 
@@ -113,9 +114,8 @@ export function DemoPaymentClient({
           <h2 className="mt-3 text-[44px] font-semibold leading-none tracking-tight text-jeffreys-graphite">
             {formatMoney(payment.amount)}
           </h2>
-          <p className="mt-3 text-sm leading-6 text-stone-600">
-            Экран выглядит как финальный платёжный шаг, но честно остаётся demo-flow
-            без реального acquiring.
+          <p className="mt-3 text-sm leading-6 text-stone-500">
+            К оплате
           </p>
         </section>
 

@@ -5,6 +5,7 @@ import { useMemo, useState, type FormEvent } from "react";
 
 import { BackLink } from "@/components/customer/back-link";
 import { CustomerMobileShell } from "@/components/customer/customer-mobile-shell";
+import { PhoneInput } from "@/components/ui/phone-input";
 import { cn } from "@/lib/cn";
 import type { ViewerSummary } from "@/lib/types";
 
@@ -183,8 +184,9 @@ export function ProfileClient({ viewer }: ProfileClientProps) {
     name: viewer.name,
     birthDate: toDateInputValue(viewer.birthDate),
     gender: viewer.gender ?? "",
-    email: viewer.email,
-    phone: viewer.phone ?? "",
+    email: viewer.email ?? "",
+    // Store only 10 digits (strip leading "7" from "7XXXXXXXXXX")
+    phone: viewer.phone.replace(/^\D*7/, "").replace(/\D/g, "").slice(0, 10),
   });
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -231,7 +233,7 @@ export function ProfileClient({ viewer }: ProfileClientProps) {
           birthDate: form.birthDate || null,
           gender: form.gender || null,
           email: form.email,
-          phone: form.phone || null,
+          phone: form.phone ? `7${form.phone}` : null,
         }),
       });
 
@@ -288,13 +290,16 @@ export function ProfileClient({ viewer }: ProfileClientProps) {
           autoComplete="email"
         />
 
-        <ProfileField
-          label="Телефон"
-          value={form.phone}
-          onChange={(value) => updateField("phone", value)}
-          inputMode="tel"
-          autoComplete="tel"
-        />
+        <label className="block px-1 py-3">
+          <span className="block text-[12px] font-semibold uppercase tracking-[0.06em] text-stone-400">
+            Телефон
+          </span>
+          <PhoneInput
+            value={form.phone}
+            onChange={(digits) => updateField("phone", digits)}
+            className="mt-3 w-full bg-transparent text-[21px] font-normal leading-tight tracking-tight text-stone-950 outline-none placeholder:text-stone-300"
+          />
+        </label>
 
         {error ? (
           <p className="rounded-[22px] bg-[#fff0ed] px-5 py-4 text-center text-sm font-semibold text-[#b8493f]">
@@ -311,7 +316,7 @@ export function ProfileClient({ viewer }: ProfileClientProps) {
         <button
           type="submit"
           disabled={isSaving}
-          className="mt-2 flex min-h-12 w-full items-center justify-center rounded-full bg-[#6b4a38] px-6 py-3 text-[16px] font-semibold tracking-tight text-white shadow-[0_16px_36px_rgba(83,55,39,0.14)] transition active:scale-[0.98] disabled:cursor-wait disabled:opacity-65"
+          className="mt-2 flex min-h-12 w-full items-center justify-center rounded-full bg-brand-600 px-6 py-3 text-[16px] font-semibold tracking-tight text-white shadow-[0_16px_36px_rgba(213,31,54,0.18)] transition hover:bg-brand-700 active:scale-[0.98] disabled:cursor-wait disabled:opacity-65"
         >
           {isSaving ? "Сохраняем" : "Сохранить изменения"}
         </button>
