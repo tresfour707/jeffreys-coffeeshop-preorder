@@ -104,7 +104,7 @@ export function SearchClient({
   return (
     <CustomerMobileShell viewer={viewer} className="pb-28 pt-0" contentClassName="mt-0">
       <section className="space-y-5">
-        <div className="sticky top-[82px] z-20 -mx-1 flex items-center gap-2 bg-white/78 px-1 py-2 backdrop-blur-[22px]">
+        <div className="sticky top-[118px] z-20 -mx-1 flex items-center gap-2 bg-white/78 px-1 py-2 backdrop-blur-[22px]">
           <BackLink />
 
           <div className="flex min-h-12 flex-1 items-center gap-3 rounded-[16px] border border-black/[0.055] bg-white/88 px-4 shadow-[0_12px_26px_rgba(0,0,0,0.055)]">

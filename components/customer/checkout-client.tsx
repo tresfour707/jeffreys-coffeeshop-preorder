@@ -330,7 +330,7 @@ export function CheckoutClient({ viewer }: CheckoutClientProps) {
             type="button"
             onClick={handlePay}
             disabled={isSubmitting}
-            className="mt-5 w-full rounded-[16px] bg-brand-600 px-5 py-4 text-[18px] font-bold text-white shadow-[0_18px_36px_rgba(213,31,54,0.2)] transition hover:bg-brand-700 active:scale-[0.98] disabled:cursor-wait disabled:bg-stone-300 disabled:shadow-none"
+            className="mt-5 w-full rounded-[16px] bg-brand-600 px-5 py-4 text-[18px] font-bold text-white shadow-[0_18px_36px_rgba(7,56,74,0.2)] transition hover:bg-brand-700 active:scale-[0.98] disabled:cursor-wait disabled:bg-stone-300 disabled:shadow-none"
           >
             {isSubmitting ? "Оплачиваем..." : "Оплатить"}
           </button>

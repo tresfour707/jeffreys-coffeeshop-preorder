@@ -21,6 +21,8 @@ type CartClientProps = {
   viewer: ViewerSummary | null;
 };
 
+const drinkCategories = new Set(["Кофе", "В стиле Jeffreys", "Напитки", "Чай"]);
+
 function TrashIcon() {
   return (
     <svg
@@ -60,7 +62,7 @@ function getCartLineProduct(item: CartLine): ProductSummary {
     description: item.description,
     price: item.price,
     available: true,
-    kind: item.category === "Напитки" ? "DRINK" : "FOOD",
+    kind: item.category && drinkCategories.has(item.category) ? "DRINK" : "FOOD",
     category: item.category,
     groupKey: item.productId,
     sizeLabel: item.sizeLabel,
@@ -315,7 +317,7 @@ export function CartClient({ viewer }: CartClientProps) {
                 clearCart(ownerKey);
                 setShowClearAction(false);
               }}
-              className="w-full rounded-[16px] bg-brand-700 px-5 py-3 text-sm font-bold text-white shadow-[0_16px_32px_rgba(213,31,54,0.22)] transition active:scale-[0.97]"
+              className="w-full rounded-[16px] bg-brand-700 px-5 py-3 text-sm font-bold text-white shadow-[0_16px_32px_rgba(7,56,74,0.22)] transition active:scale-[0.97]"
             >
               Очистить корзину
             </button>
@@ -336,7 +338,7 @@ export function CartClient({ viewer }: CartClientProps) {
           </div>
           <Link
             href="/checkout"
-            className="rounded-[16px] bg-brand-600 px-5 py-3 text-sm font-bold text-white shadow-[0_12px_24px_rgba(213,31,54,0.2)] transition hover:bg-brand-700 active:scale-[0.97]"
+            className="rounded-[16px] bg-brand-600 px-5 py-3 text-sm font-bold text-white shadow-[0_12px_24px_rgba(7,56,74,0.2)] transition hover:bg-brand-700 active:scale-[0.97]"
           >
             К оформлению
           </Link>

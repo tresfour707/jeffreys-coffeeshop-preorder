@@ -75,22 +75,56 @@ function getProductSizeLabel(name: string) {
   return match?.[1].replace(/\s+/, " ") ?? null;
 }
 
+function getDrinkCategory(name: string) {
+  const normalized = getProductMediaName(name).toLowerCase();
+
+  if (
+    normalized.includes("аляска") ||
+    normalized.includes("соленая карамель") ||
+    normalized.includes("лавандовый") ||
+    normalized.includes("урбеч")
+  ) {
+    return "В стиле Jeffreys";
+  }
+
+  if (
+    normalized.includes("матча") ||
+    normalized.includes("какао") ||
+    normalized.includes("клубничное")
+  ) {
+    return "Напитки";
+  }
+
+  if (
+    normalized.includes("листовой") ||
+    normalized.includes("кленовый") ||
+    normalized.includes("облепиховый") ||
+    normalized.includes("чай") ||
+    normalized.includes("тодди")
+  ) {
+    return "Чай";
+  }
+
+  return "Кофе";
+}
+
 function getRepeatProduct(item: OrderItemSummary): ProductSummary | null {
   if (!item.productId) {
     return null;
   }
 
   const sizeLabel = getProductSizeLabel(item.productName);
+  const name = getProductMediaName(item.productName);
 
   return {
     id: item.productId,
-    name: getProductMediaName(item.productName),
+    name,
     displayName: item.productName,
     description: null,
     price: item.unitPrice,
     available: true,
-    kind: sizeLabel ? "DRINK" : "FOOD",
-    category: sizeLabel ? "Напитки" : null,
+    kind: "DRINK",
+    category: getDrinkCategory(name),
     groupKey: item.productId,
     sizeLabel,
     sizeSort: null,

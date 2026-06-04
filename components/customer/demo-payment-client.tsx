@@ -97,7 +97,7 @@ export function DemoPaymentClient({
               </p>
             </div>
 
-            <div className="rounded-[16px] bg-brand-600 px-4 py-3 text-right text-white shadow-[0_12px_24px_rgba(213,31,54,0.18)]">
+            <div className="rounded-[16px] bg-brand-600 px-4 py-3 text-right text-white shadow-[0_12px_24px_rgba(7,56,74,0.18)]">
               <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/70">
                 Способ
               </p>
@@ -164,7 +164,7 @@ export function DemoPaymentClient({
             type="button"
             onClick={() => handleResolve("SUCCESS")}
             disabled={isSubmitting !== null}
-            className="w-full rounded-[16px] bg-brand-600 px-5 py-4 text-sm font-bold text-white shadow-[0_14px_28px_rgba(213,31,54,0.18)] transition hover:bg-brand-700 disabled:cursor-wait disabled:bg-brand-200"
+            className="w-full rounded-[16px] bg-brand-600 px-5 py-4 text-sm font-bold text-white shadow-[0_14px_28px_rgba(7,56,74,0.18)] transition hover:bg-brand-700 disabled:cursor-wait disabled:bg-brand-200"
           >
             {isSubmitting === "SUCCESS" ? "Подтверждаем…" : "Успешная оплата"}
           </button>
