@@ -201,7 +201,7 @@ export function ProductArtwork({
       <div
         className={cn(
           "relative overflow-hidden rounded-[24px] bg-[#f5f2ed]",
-          isSheet ? "h-[280px]" : isCompact ? "h-[132px] w-full" : "h-[170px] w-full",
+          "aspect-square w-full",
           className,
         )}
       >
@@ -210,7 +210,7 @@ export function ProductArtwork({
           alt={productMedia.alt}
           fill
           sizes={isSheet ? "520px" : "(max-width: 430px) 50vw, 220px"}
-          className="object-cover"
+          className="object-contain"
           style={{ objectPosition: productMedia.objectPosition ?? "center center" }}
         />
       </div>
@@ -221,7 +221,7 @@ export function ProductArtwork({
     <div
       className={cn(
           "relative overflow-hidden rounded-[24px] bg-[#f5f4f1]",
-        isSheet ? "h-[250px]" : isCompact ? "h-[132px] w-full" : "h-[170px] w-full",
+        "aspect-square w-full",
         className,
       )}
     >

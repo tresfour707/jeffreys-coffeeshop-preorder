@@ -13,27 +13,33 @@ const SESSION_TOKEN_BYTES = 32;
 export type AuthUser = {
   id: string;
   name: string;
-  email: string;
+  phone: string;
+  email: string | null;
+  phoneVerified: boolean;
+  bonusBalance: number;
   birthDate: string | null;
   gender: string | null;
-  phone: string | null;
 };
 
 function toAuthUser(user: {
   id: string;
   name: string;
-  email: string;
+  phone: string;
+  email: string | null;
+  phoneVerified: boolean;
+  bonusBalance: number;
   birthDate: Date | null;
   gender: string | null;
-  phone: string | null;
 }): AuthUser {
   return {
     id: user.id,
     name: user.name,
+    phone: user.phone,
     email: user.email,
+    phoneVerified: user.phoneVerified,
+    bonusBalance: user.bonusBalance,
     birthDate: user.birthDate?.toISOString() ?? null,
     gender: user.gender,
-    phone: user.phone,
   };
 }
 
@@ -130,10 +136,12 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
         select: {
           id: true,
           name: true,
+          phone: true,
           email: true,
+          phoneVerified: true,
+          bonusBalance: true,
           birthDate: true,
           gender: true,
-          phone: true,
         },
       },
     },
@@ -165,6 +173,10 @@ export async function requireCurrentUser() {
   return user;
 }
 
-export function normalizeEmail(email: string) {
-  return email.trim().toLowerCase();
+export function normalizePhone(phone: string) {
+  return phone.replace(/\D/g, "").replace(/^8/, "7").replace(/^(?!7)/, "7");
+}
+
+export function generateOtpCode() {
+  return String(Math.floor(1000 + Math.random() * 9000));
 }

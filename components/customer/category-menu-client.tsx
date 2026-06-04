@@ -136,7 +136,7 @@ export function CategoryMenuClient({
                 onClick={() => setActiveChip(chip)}
                 className={`shrink-0 rounded-[14px] border px-4 py-2.5 text-sm font-semibold transition ${
                   isActive
-                    ? "border-brand-600 bg-brand-600 text-white shadow-[0_10px_20px_rgba(213,31,54,0.14)]"
+                    ? "border-brand-600 bg-brand-600 text-white shadow-[0_10px_20px_rgba(7,56,74,0.14)]"
                     : "border-black/[0.055] bg-white/70 text-jeffreys-graphite"
                 }`}
               >

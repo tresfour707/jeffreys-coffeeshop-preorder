@@ -4,9 +4,9 @@ import { statusLabels } from "@/lib/labels";
 
 const toneClasses: Record<OrderStatus, string> = {
   DRAFT: "border-stone-200 bg-stone-100 text-stone-700",
-  WAITING: "border-brand-200 bg-brand-50 text-brand-800",
-  PREPARING: "border-sky-200 bg-sky-50 text-sky-800",
-  READY: "border-emerald-200 bg-emerald-50 text-emerald-800",
+  WAITING: "border-[#d8c7a9]/70 bg-[#f6eedf] text-[#8a6a3a]",
+  PREPARING: "border-[#8fa878]/45 bg-[#eef4ea] text-[#5f754f]",
+  READY: "border-[#6f9a61]/40 bg-[#e4f1df] text-[#456f42]",
   CANCELLED: "border-stone-300 bg-stone-200 text-stone-700",
 };
 

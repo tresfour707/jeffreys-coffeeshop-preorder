@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 import { toErrorResponse } from "@/lib/api-response";
 import { AppError } from "@/lib/app-error";
-import { normalizeEmail, requireCurrentUser } from "@/lib/auth";
+import { requireCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -47,16 +47,15 @@ export async function PATCH(request: Request) {
     const body = await request.json().catch(() => null);
 
     const name = typeof body?.name === "string" ? body.name.trim() : "";
-    const email = typeof body?.email === "string" ? normalizeEmail(body.email) : "";
+    const email = parseOptionalString(body?.email);
     const birthDate = parseBirthDate(body?.birthDate);
     const gender = parseOptionalString(body?.gender);
-    const phone = parseOptionalString(body?.phone);
 
     if (name.length < 2) {
       throw new AppError("Укажите имя не короче 2 символов.", 400);
     }
 
-    if (!email.includes("@")) {
+    if (email && !email.includes("@")) {
       throw new AppError("Укажите корректный email.", 400);
     }
 
@@ -64,43 +63,17 @@ export async function PATCH(request: Request) {
       throw new AppError("Выберите корректный пол.", 400);
     }
 
-    if (phone && phone.length > 32) {
-      throw new AppError("Телефон должен быть короче 32 символов.", 400);
-    }
-
-    if (email !== viewer.email) {
-      const existingUser = await prisma.user.findUnique({
-        where: {
-          email,
-        },
-        select: {
-          id: true,
-        },
-      });
-
-      if (existingUser && existingUser.id !== viewer.id) {
-        throw new AppError("Аккаунт с такой почтой уже существует.", 409);
-      }
-    }
-
     const user = await prisma.user.update({
-      where: {
-        id: viewer.id,
-      },
-      data: {
-        name,
-        email,
-        birthDate,
-        gender,
-        phone,
-      },
+      where: { id: viewer.id },
+      data: { name, email, birthDate, gender },
       select: {
         id: true,
         name: true,
+        phone: true,
         email: true,
+        phoneVerified: true,
         birthDate: true,
         gender: true,
-        phone: true,
       },
     });
 

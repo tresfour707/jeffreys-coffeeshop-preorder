@@ -371,6 +371,95 @@ const productMediaByName: Record<string, ProductMediaDefinition> = {
   },
 };
 
-export function getProductMedia(name: string) {
-  return productMediaByName[name] ?? null;
+const jeffreysProductMediaByName: Record<string, ProductMediaDefinition> = {
+  "Двойной эспрессо": {
+    src: "/product-images/jeffreys/double-espresso.png",
+    alt: "Двойной эспрессо",
+  },
+  "Американо": {
+    src: "/product-images/jeffreys/americano.png",
+    alt: "Американо",
+  },
+  "Фильтр-кофе": {
+    src: "/product-images/jeffreys/filter-coffee.png",
+    alt: "Фильтр-кофе",
+  },
+  "Капучино": {
+    src: "/product-images/jeffreys/cappuccino.png",
+    alt: "Капучино",
+  },
+  "Латте": {
+    src: "/product-images/jeffreys/latte.png",
+    alt: "Латте",
+  },
+  "Флэт Уайт": {
+    src: "/product-images/jeffreys/flat-white.png",
+    alt: "Флэт Уайт",
+  },
+  "Раф кофе": {
+    src: "/product-images/jeffreys/raf-coffee.png",
+    alt: "Раф кофе",
+  },
+  "Бамбл": {
+    src: "/product-images/jeffreys/bumble.png",
+    alt: "Бамбл",
+  },
+  "Эспрессо-тоник": {
+    src: "/product-images/jeffreys/espresso-tonic.png",
+    alt: "Эспрессо-тоник",
+  },
+  "Капучино Аляска": {
+    src: "/product-images/jeffreys/cappuccino-alaska.png",
+    alt: "Капучино Аляска",
+  },
+  "Раф соленая карамель": {
+    src: "/product-images/jeffreys/raf-salted-caramel.png",
+    alt: "Раф соленая карамель",
+  },
+  "Раф лавандовый": {
+    src: "/product-images/jeffreys/raf-lavender.png",
+    alt: "Раф лавандовый",
+  },
+  "Латте урбеч": {
+    src: "/product-images/jeffreys/latte-urbech.png",
+    alt: "Латте урбеч",
+  },
+  "Матча латте": {
+    src: "/product-images/jeffreys/matcha-latte.png",
+    alt: "Матча латте",
+  },
+  "Какао": {
+    src: "/product-images/jeffreys/cacao.png",
+    alt: "Какао",
+  },
+  "Клубничное какао": {
+    src: "/product-images/jeffreys/strawberry-cacao.png",
+    alt: "Клубничное какао",
+  },
+  "Листовой": {
+    src: "/product-images/jeffreys/leaf-tea.png",
+    alt: "Листовой чай",
+  },
+  "Канадский кленовый": {
+    src: "/product-images/jeffreys/canadian-maple-tea.png",
+    alt: "Канадский кленовый чай",
+  },
+  "Облепиховый с медом": {
+    src: "/product-images/jeffreys/sea-buckthorn-honey.png",
+    alt: "Облепиховый чай с медом",
+  },
+  "Пряный чай латте": {
+    src: "/product-images/jeffreys/spiced-tea-latte.png",
+    alt: "Пряный чай латте",
+  },
+  "Аляска Тодди": {
+    src: "/product-images/jeffreys/alaska-toddy.png",
+    alt: "Аляска Тодди",
+  },
+};
+
+export function getProductMedia(name: string): ProductMediaDefinition | null {
+  void productMediaByName;
+
+  return jeffreysProductMediaByName[name] ?? null;
 }

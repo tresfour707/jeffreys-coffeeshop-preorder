@@ -17,8 +17,52 @@ type CustomerMobileShellProps = {
   queueClassName?: string;
   contentClassName?: string;
   className?: string;
+  chrome?: "light" | "dark";
+  menuChromeExpanded?: boolean;
+  onThemeToggle?: () => void;
   children: ReactNode;
 };
+
+type LocationOption = {
+  id: string;
+  name: string;
+  address: string;
+  note?: string;
+  opensAt: string;
+};
+
+const LOCATION_STORAGE_KEY = "jeffreys-preorder-location";
+const THEME_STORAGE_KEY = "jeffreys-menu-theme";
+
+const locationOptions: LocationOption[] = [
+  {
+    id: "hse-pokrovka",
+    name: "НИУ ВШЭ Покровка",
+    address: "Покровский бульвар, 11с4",
+    note: "по пропуску",
+    opensAt: "08:00",
+  },
+  {
+    id: "hse-myasnitskaya",
+    name: "НИУ ВШЭ Мясницкая",
+    address: "Мясницкая ул., 20",
+    opensAt: "08:00",
+  },
+];
+
+const defaultLocationId = "hse-pokrovka";
+
+function getLocationById(id: string) {
+  return (
+    locationOptions.find((location) => location.id === id) ??
+    locationOptions.find((location) => location.id === defaultLocationId) ??
+    locationOptions[0]
+  );
+}
+
+function getLocationMeta(location: LocationOption) {
+  return location.note ? `${location.address} · ${location.note}` : location.address;
+}
 function QueueStrip({
   queueSummary,
   queueHeadline,
@@ -58,10 +102,98 @@ function AccountIcon() {
   return (
     <img
       aria-hidden="true"
-      src="/brand/jeffreys-deer.png"
+      src="/brand/jeffreys-wordmark.png"
       alt=""
-      className="h-9 w-9 select-none rounded-full object-contain shadow-[0_10px_20px_rgba(213,31,54,0.18)]"
+      className="h-10 w-10 select-none object-contain"
     />
+  );
+}
+
+function BrandLogoIcon({ className }: { className?: string }) {
+  return (
+    <img
+      aria-hidden="true"
+      src="/brand/jeffreys-wordmark.png"
+      alt=""
+      className={cn("h-[56px] w-[56px] select-none object-contain", className)}
+    />
+  );
+}
+
+function ThemeToggleIcon({ theme }: { theme: "light" | "dark" }) {
+  if (theme === "dark") {
+    return (
+      <svg
+        aria-hidden="true"
+        viewBox="0 0 24 24"
+        className="h-[25px] w-[25px]"
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2.35"
+      >
+        <circle cx="12" cy="12" r="4.15" />
+        <path d="M12 3.3v1.85" />
+        <path d="M12 18.85v1.85" />
+        <path d="m5.85 5.85 1.3 1.3" />
+        <path d="m16.85 16.85 1.3 1.3" />
+        <path d="M3.3 12h1.85" />
+        <path d="M18.85 12h1.85" />
+        <path d="m5.85 18.15 1.3-1.3" />
+        <path d="m16.85 7.15 1.3-1.3" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      className="h-[25px] w-[25px]"
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
+    >
+      <path d="M19.4 15.2A7.2 7.2 0 0 1 8.8 4.6a7.8 7.8 0 1 0 10.6 10.6Z" />
+    </svg>
+  );
+}
+
+function PinIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      className={cn("h-5 w-5", className)}
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
+    >
+      <path d="M12 21s6-5.2 6-11a6 6 0 0 0-12 0c0 5.8 6 11 6 11Z" />
+      <circle cx="12" cy="10" r="2.1" />
+    </svg>
+  );
+}
+
+function LocationChevron({ className }: { className?: string }) {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      className={cn("h-4 w-4", className)}
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2.2"
+    >
+      <path d="m6 9 6 6 6-6" />
+    </svg>
   );
 }
 
@@ -241,7 +373,7 @@ function getViewerInitials(viewer: ViewerSummary) {
     .map((part) => part[0])
     .join("");
 
-  return (initials || viewer.email[0] || "A").toUpperCase();
+  return (initials || viewer.email?.[0] || "A").toUpperCase();
 }
 
 function AccountMenuRow({
@@ -249,27 +381,46 @@ function AccountMenuRow({
   label,
   icon,
   onNavigate,
+  variant = "row",
 }: {
   href: string;
   label: string;
   icon: ReactNode;
   onNavigate: () => void;
+  variant?: "row" | "tile";
 }) {
+  const isTile = variant === "tile";
+
   return (
     <Link
       href={href}
       onClick={onNavigate}
-      className="flex min-h-[54px] items-center justify-between gap-4 rounded-[18px] px-2 text-jeffreys-graphite transition active:scale-[0.99] active:bg-white/72"
+      className={cn(
+        "customer-account-row text-jeffreys-graphite transition active:scale-[0.99] active:bg-white/72",
+        isTile
+          ? "flex min-h-[134px] flex-col items-start justify-between rounded-[24px] px-4 py-4"
+          : "flex min-h-[58px] items-center justify-between gap-4 rounded-[20px] px-4",
+      )}
     >
-      <span className="flex min-w-0 items-center gap-3">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[12px] bg-brand-50 text-brand-700">
+      <span
+        className={cn(
+          "min-w-0",
+          isTile ? "flex flex-col items-start gap-4" : "flex items-center gap-3",
+        )}
+      >
+        <span className="customer-account-row-icon flex h-10 w-10 shrink-0 items-center justify-center rounded-[13px] bg-brand-50 text-brand-700">
           {icon}
         </span>
-        <span className="block truncate text-[19px] font-semibold leading-tight tracking-tight text-jeffreys-graphite">
+        <span
+          className={cn(
+            "customer-account-row-label block truncate font-semibold leading-tight tracking-tight text-jeffreys-graphite",
+            isTile ? "text-[17px]" : "text-[18px]",
+          )}
+        >
           {label}
         </span>
       </span>
-      <AccountChevron />
+      {isTile ? null : <AccountChevron />}
     </Link>
   );
 }
@@ -318,9 +469,18 @@ export function CustomerMobileShell({
   contentClassName,
   className,
   children,
+  chrome = "light",
+  menuChromeExpanded = false,
+  onThemeToggle,
 }: CustomerMobileShellProps) {
   const pathname = usePathname();
-  const [activePanel, setActivePanel] = useState<"menu" | "account" | null>(null);
+  const [activePanel, setActivePanel] = useState<"menu" | "account" | "locations" | null>(null);
+  const [selectedLocationId, setSelectedLocationId] = useState(defaultLocationId);
+  const [pendingLocationId, setPendingLocationId] = useState(defaultLocationId);
+  const [localChrome, setLocalChrome] = useState<"light" | "dark">(chrome);
+  const hasExternalThemeToggle = typeof onThemeToggle === "function";
+  const effectiveChrome = hasExternalThemeToggle ? chrome : localChrome;
+  const isDarkChrome = effectiveChrome === "dark";
 
   useEffect(() => {
     const searchParams =
@@ -330,6 +490,37 @@ export function CustomerMobileShell({
 
     setActivePanel(searchParams?.get("panel") === "account" ? "account" : null);
   }, [pathname]);
+
+  useEffect(() => {
+    if (hasExternalThemeToggle || typeof window === "undefined") {
+      return;
+    }
+
+    const storedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
+
+    if (storedTheme === "light" || storedTheme === "dark") {
+      setLocalChrome(storedTheme);
+    }
+  }, [hasExternalThemeToggle]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const storedLocationId = window.localStorage.getItem(LOCATION_STORAGE_KEY);
+
+    if (storedLocationId && getLocationById(storedLocationId).id === storedLocationId) {
+      setSelectedLocationId(storedLocationId);
+      setPendingLocationId(storedLocationId);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (activePanel === "locations") {
+      setPendingLocationId(selectedLocationId);
+    }
+  }, [activePanel, selectedLocationId]);
 
   useEffect(() => {
     if (!activePanel) {
@@ -354,42 +545,151 @@ export function CustomerMobileShell({
 
   const isMenuOpen = activePanel === "menu";
   const isAccountOpen = activePanel === "account";
+  const isLocationsOpen = activePanel === "locations";
+  const selectedLocation = getLocationById(selectedLocationId);
+  const pendingLocation = getLocationById(pendingLocationId);
+
+  function handleThemeToggle() {
+    if (hasExternalThemeToggle) {
+      onThemeToggle?.();
+      return;
+    }
+
+    setLocalChrome((currentChrome) => {
+      const nextChrome = currentChrome === "dark" ? "light" : "dark";
+
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem(THEME_STORAGE_KEY, nextChrome);
+      }
+
+      return nextChrome;
+    });
+  }
+
+  function commitLocationSelection() {
+    setSelectedLocationId(pendingLocation.id);
+
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(LOCATION_STORAGE_KEY, pendingLocation.id);
+    }
+
+    setActivePanel(null);
+  }
 
   return (
-    <main className="min-h-screen overflow-x-hidden">
-      <div className="fixed inset-x-0 top-0 z-40 w-full">
-        <div className="customer-top-island">
-          <div className="customer-top-island-inner">
-            <button
-              type="button"
-              onClick={() => setActivePanel("menu")}
-              aria-label="Открыть меню"
-              className="flex h-11 w-11 items-center justify-center justify-self-start rounded-[15px] transition active:scale-[0.96]"
-            >
-              <MenuIcon />
-            </button>
+    <main
+      className={cn(
+        "customer-theme-root min-h-screen",
+        isDarkChrome
+          ? "customer-theme-dark bg-black text-[#f4ecdc]"
+          : "customer-theme-light bg-[#eef7f9] text-brand-900",
+      )}
+    >
+      <div
+        aria-hidden="true"
+        className={cn(
+          "customer-menu-glass-backdrop",
+          !isDarkChrome ? "customer-menu-glass-backdrop-light" : "",
+          menuChromeExpanded ? "customer-menu-glass-backdrop-expanded" : "",
+        )}
+      />
 
-            <Link
-              href="/menu"
-              aria-label="Открыть главный экран"
-              className="justify-self-center"
-            >
-              <BrandMark tone="coffee" size="md" />
-            </Link>
-
+      <div className="fixed inset-x-0 top-0 z-50 w-full">
+        <div
+          className={cn(
+            "customer-top-island",
+            "customer-top-island-menu",
+            !isDarkChrome ? "customer-top-island-menu-light" : "",
+          )}
+        >
+          <div
+            className={cn(
+              "customer-top-island-inner",
+              "customer-top-island-inner-menu",
+              isDarkChrome ? "customer-top-island-inner-menu-dark" : "",
+            )}
+          >
             <button
               type="button"
               onClick={() => setActivePanel("account")}
               aria-label={viewer ? "Открыть профиль" : "Открыть вход и регистрацию"}
-              className="flex h-11 w-11 items-center justify-center justify-self-end rounded-[15px] transition active:scale-[0.96]"
+              className="flex h-14 w-[60px] shrink-0 items-center justify-start"
             >
-              <AccountIcon />
+              <BrandLogoIcon className={isDarkChrome ? "customer-brand-logo-ivory" : ""} />
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActivePanel("locations")}
+              aria-label="Выбрать кофейню"
+              className={cn(
+                "group min-w-0 flex-1 transition active:scale-[0.99]",
+                "text-center",
+                isDarkChrome ? "text-[#f4ecdc]" : "text-brand-900",
+              )}
+            >
+              <span
+                className={cn(
+                  "flex min-w-0 items-center gap-1.5 font-semibold leading-none tracking-tight",
+                  isDarkChrome
+                    ? "mt-0 justify-center text-[17px] text-[#f4ecdc]"
+                    : "mt-0 justify-center text-[17px] text-brand-900",
+                )}
+              >
+                <PinIcon
+                  className={cn(
+                    "h-[15px] w-[15px] shrink-0",
+                    isDarkChrome ? "text-[#f4ecdc]/82" : "text-brand-600",
+                  )}
+                />
+                <span className="truncate">{selectedLocation.name}</span>
+                <LocationChevron
+                  className={isDarkChrome ? "text-[#f4ecdc]/82" : "text-brand-600"}
+                />
+              </span>
+              <span
+                className={cn(
+                  "customer-location-marquee mt-1.5 font-medium leading-none",
+                  isDarkChrome
+                    ? "text-[11px] text-[#f4ecdc]/58"
+                    : "text-[11px] text-brand-900/58",
+                )}
+              >
+                <span className="customer-location-marquee-track">
+                  <span className="customer-location-marquee-item">
+                    {getLocationMeta(selectedLocation)}
+                  </span>
+                  <span aria-hidden="true" className="customer-location-marquee-item">
+                    {getLocationMeta(selectedLocation)}
+                  </span>
+                </span>
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleThemeToggle}
+              aria-label="Переключить тему"
+              className={cn(
+                "shrink-0 transition active:scale-[0.96]",
+                "inline-flex h-10 w-10 justify-self-end items-center justify-center rounded-full backdrop-blur-[18px]",
+                isDarkChrome
+                  ? "bg-[#f4ecdc]/10 text-[#f4ecdc]/86 ring-1 ring-[#f4ecdc]/10"
+                  : "bg-white/78 text-brand-900 shadow-[0_8px_20px_rgba(7,56,74,0.12)] ring-1 ring-brand-900/10",
+              )}
+            >
+              <ThemeToggleIcon theme={isDarkChrome ? "dark" : "light"} />
             </button>
           </div>
         </div>
       </div>
 
-      <div className="customer-page pt-[98px]">
+      <div
+        className={cn(
+          "customer-page",
+          hasExternalThemeToggle ? "pt-0" : "pt-[96px]",
+        )}
+      >
         <div className={cn("pb-10 pt-4", className)}>
           {header ? <div>{header}</div> : null}
           {queueSummary ? (
@@ -424,12 +724,29 @@ export function CustomerMobileShell({
             isMenuOpen ? "translate-x-0" : "-translate-x-full",
           )}
         >
-          <div className="pointer-events-none absolute inset-0 bg-white/82" />
-          <div className="pointer-events-none absolute inset-0">
-            <div className="absolute left-0 top-0 h-full w-[6px] bg-brand-600" />
-            <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(213,31,54,0.065)_0%,rgba(255,255,255,0)_36%),linear-gradient(180deg,rgba(255,255,255,0.84)_0%,rgba(243,243,241,0.74)_100%)]" />
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(9,9,9,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(9,9,9,0.035)_1px,transparent_1px)] bg-[length:34px_34px] opacity-45" />
-          </div>
+              <div
+                className={cn(
+                  "pointer-events-none absolute inset-0",
+                  isDarkChrome ? "bg-[#061213]/92" : "bg-white/82",
+                )}
+              />
+              <div className="pointer-events-none absolute inset-0">
+                <div className={cn("absolute left-0 top-0 h-full w-[6px]", isDarkChrome ? "bg-[#d9c7aa]" : "bg-brand-600")} />
+                <div
+                  className={cn(
+                    "absolute inset-0",
+                    isDarkChrome
+                      ? "bg-[radial-gradient(circle_at_18%_10%,rgba(244,236,220,0.12),transparent_34%),linear-gradient(180deg,rgba(5,17,20,0.88)_0%,rgba(5,17,20,0.96)_100%)]"
+                      : "bg-[linear-gradient(135deg,rgba(7,56,74,0.065)_0%,rgba(255,255,255,0)_36%),linear-gradient(180deg,rgba(255,255,255,0.84)_0%,rgba(243,243,241,0.74)_100%)]",
+                  )}
+                />
+                <div
+                  className={cn(
+                    "absolute inset-0 bg-[linear-gradient(rgba(9,9,9,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(9,9,9,0.035)_1px,transparent_1px)] bg-[length:34px_34px] opacity-45",
+                    isDarkChrome ? "opacity-10" : "",
+                  )}
+                />
+              </div>
 
           <div className="relative z-10 h-full overflow-y-scroll overscroll-y-contain px-5 pb-24 pt-6 [-webkit-overflow-scrolling:touch] [touch-action:pan-y]">
             <div className="min-h-[calc(100dvh+96px)]">
@@ -442,7 +759,7 @@ export function CustomerMobileShell({
                   type="button"
                   onClick={() => setActivePanel(null)}
                   aria-label="Закрыть меню"
-                  className="absolute right-0 top-0 flex h-12 w-12 items-center justify-center text-[34px] font-light leading-none text-jeffreys-graphite"
+                  className={cn("absolute right-0 top-0 flex h-12 w-12 items-center justify-center text-[34px] font-light leading-none", isDarkChrome ? "text-[#f4ecdc]" : "text-jeffreys-graphite")}
                 >
                   ×
                 </button>
@@ -486,29 +803,160 @@ export function CustomerMobileShell({
 
         <aside
           className={cn(
+            "absolute inset-x-0 bottom-0 mx-auto flex max-h-[86vh] w-full max-w-[430px] flex-col overflow-hidden rounded-t-[30px] shadow-[0_-18px_54px_rgba(0,0,0,0.18)] transition-transform duration-300",
+            isDarkChrome
+              ? "bg-[#201b1e] text-[#f4ecdc]"
+              : "bg-[#eef7f9] text-brand-900",
+            isLocationsOpen ? "translate-y-0" : "translate-y-full",
+          )}
+        >
+          <div
+            className={cn(
+              "relative flex min-h-16 items-center justify-center border-b px-5",
+              isDarkChrome ? "border-[#f4ecdc]/8" : "border-brand-900/10",
+            )}
+          >
+            <h2 className="text-[19px] font-semibold leading-none tracking-tight">
+              Локации
+            </h2>
+            <button
+              type="button"
+              onClick={() => setActivePanel(null)}
+              aria-label="Закрыть выбор локации"
+              className={cn(
+                "absolute right-4 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full text-[28px] font-light leading-none transition active:scale-95",
+                isDarkChrome
+                  ? "bg-[#f4ecdc]/7 text-[#f4ecdc]/68"
+                  : "bg-brand-900/[0.065] text-brand-900/62",
+              )}
+            >
+              ×
+            </button>
+          </div>
+
+          <div className="overflow-y-auto px-5 pb-28 [-webkit-overflow-scrolling:touch]">
+            {locationOptions.map((location) => {
+              const isSelected = location.id === pendingLocationId;
+
+              return (
+                <button
+                  key={location.id}
+                  type="button"
+                  onClick={() => setPendingLocationId(location.id)}
+                  className={cn(
+                    "flex w-full items-start gap-3 border-b py-4 text-left transition active:scale-[0.99]",
+                    isDarkChrome ? "border-[#f4ecdc]/8" : "border-brand-900/10",
+                  )}
+                >
+                  <span
+                    className={cn(
+                      "mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2",
+                      isSelected
+                        ? "border-brand-500"
+                        : isDarkChrome
+                          ? "border-[#f4ecdc]/18"
+                          : "border-brand-900/16",
+                    )}
+                  >
+                    {isSelected ? (
+                      <span className="h-2.5 w-2.5 rounded-full bg-brand-500" />
+                    ) : null}
+                  </span>
+
+                  <span className="min-w-0 flex-1">
+                    <span
+                      className={cn(
+                        "flex min-w-0 items-center gap-2 text-[18px] font-semibold leading-tight",
+                        isDarkChrome ? "text-[#f4ecdc]/84" : "text-brand-900",
+                      )}
+                    >
+                      <PinIcon
+                        className={cn(
+                          "h-4 w-4 shrink-0",
+                          isDarkChrome ? "text-brand-500" : "text-brand-600",
+                        )}
+                      />
+                      <span className="truncate">{location.name}</span>
+                    </span>
+                    <span
+                      className={cn(
+                        "mt-1.5 block text-[14px] font-medium leading-5",
+                        isDarkChrome ? "text-[#f4ecdc]/56" : "text-brand-900/60",
+                      )}
+                    >
+                      {location.address}
+                      {location.note ? ` (${location.note})` : ""}
+                    </span>
+                  </span>
+
+                  <span
+                    className={cn(
+                      "mt-0.5 shrink-0 rounded-[9px] px-2.5 py-1 text-[12px] font-semibold",
+                      isDarkChrome
+                        ? "bg-[#f4ecdc]/7 text-[#f4ecdc]/50"
+                        : "bg-brand-900/[0.055] text-brand-900/48",
+                    )}
+                  >
+                    С {location.opensAt}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          <div
+            className={cn(
+              "absolute inset-x-0 bottom-0 border-t px-5 pb-[calc(env(safe-area-inset-bottom)+1rem)] pt-4 backdrop-blur-xl",
+              isDarkChrome
+                ? "border-[#f4ecdc]/8 bg-[#201b1e]/92"
+                : "border-brand-900/10 bg-[#eef7f9]/92",
+            )}
+          >
+            <button
+              type="button"
+              onClick={commitLocationSelection}
+              className={cn(
+                "flex min-h-14 w-full items-center justify-center rounded-[18px] bg-brand-600 px-5 text-[18px] font-extrabold tracking-tight shadow-[0_16px_34px_rgba(7,56,74,0.22)] transition active:scale-[0.98]",
+                isDarkChrome ? "text-[#f4ecdc]" : "text-white",
+              )}
+            >
+              Выбрать
+            </button>
+          </div>
+        </aside>
+
+        <aside
+          className={cn(
             "customer-matte-overlay absolute inset-y-0 right-0 isolate w-full max-w-[430px] overflow-hidden transition-transform duration-300",
             isAccountOpen ? "translate-x-0" : "translate-x-full",
           )}
         >
           <div className="pointer-events-none absolute inset-0 bg-white/82" />
-          <div className="pointer-events-none absolute inset-0">
-            <div className="absolute right-0 top-0 h-full w-[6px] bg-brand-600" />
-            <div className="absolute inset-0 bg-[linear-gradient(225deg,rgba(213,31,54,0.06)_0%,rgba(255,255,255,0)_38%),linear-gradient(180deg,rgba(255,255,255,0.86)_0%,rgba(243,243,241,0.76)_100%)]" />
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(9,9,9,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(9,9,9,0.035)_1px,transparent_1px)] bg-[length:34px_34px] opacity-42" />
+          <div
+            className={cn(
+              "pointer-events-none absolute inset-0",
+              isDarkChrome ? "bg-[#061213]/92" : "",
+            )}
+          >
+            <div className={cn("absolute right-0 top-0 h-full w-[6px]", isDarkChrome ? "bg-[#d9c7aa]" : "bg-brand-600")} />
+            <div
+              className={cn(
+                "absolute inset-0",
+                isDarkChrome
+                  ? "bg-[radial-gradient(circle_at_20%_12%,rgba(244,236,220,0.11),transparent_34%),linear-gradient(180deg,rgba(5,17,20,0.88)_0%,rgba(5,17,20,0.96)_100%)]"
+                  : "bg-[linear-gradient(225deg,rgba(7,56,74,0.06)_0%,rgba(255,255,255,0)_38%),linear-gradient(180deg,rgba(255,255,255,0.86)_0%,rgba(243,243,241,0.76)_100%)]",
+              )}
+            />
           </div>
 
           <div className="relative z-10 h-full overflow-y-scroll overscroll-y-contain px-5 pb-24 pt-6 [-webkit-overflow-scrolling:touch] [touch-action:pan-y]">
             <div className="min-h-[calc(100dvh+96px)]">
-              <div className="relative flex min-h-12 items-center justify-center pt-14">
-                <h2 className="text-[30px] font-medium leading-none tracking-tight text-stone-950">
-                  Аккаунт
-                </h2>
-
+              <div className="relative flex min-h-12 items-center justify-end">
                 <button
                   type="button"
                   onClick={() => setActivePanel(null)}
                   aria-label="Закрыть аккаунт"
-                  className="absolute right-0 top-0 flex h-12 w-12 items-center justify-center text-[34px] font-light leading-none text-jeffreys-graphite"
+                  className={cn("absolute right-0 top-0 flex h-12 w-12 items-center justify-center text-[34px] font-light leading-none", isDarkChrome ? "text-[#f4ecdc]" : "text-jeffreys-graphite")}
                 >
                   ×
                 </button>
@@ -517,10 +965,10 @@ export function CustomerMobileShell({
               {!viewer ? (
                 <div className="flex min-h-[70vh] flex-col justify-center pb-8 pt-10 text-center">
                   <div className="mx-auto max-w-[290px]">
-                    <h2 className="text-[30px] font-medium leading-none tracking-tight text-stone-950">
+                    <h2 className={cn("text-[30px] font-medium leading-none tracking-tight", isDarkChrome ? "text-[#f4ecdc]" : "text-stone-950")}>
                       Авторизация
                     </h2>
-                    <p className="mt-5 text-sm leading-6 text-stone-600">
+                    <p className={cn("mt-5 text-sm leading-6", isDarkChrome ? "text-[#f4ecdc]/62" : "text-stone-600")}>
                       Войдите или создайте аккаунт, чтобы оформить заказ.
                     </p>
                   </div>
@@ -529,14 +977,22 @@ export function CustomerMobileShell({
                     <Link
                       href="/sign-in?next=%2Fmenu"
                       onClick={() => setActivePanel(null)}
-                      className="flex min-h-14 items-center justify-center rounded-[16px] bg-brand-600 px-6 py-4 text-[17px] font-extrabold tracking-tight text-white shadow-[0_18px_36px_rgba(213,31,54,0.22)]"
+                      className={cn(
+                        "flex min-h-14 items-center justify-center rounded-[16px] px-6 py-4 text-[17px] font-extrabold tracking-tight shadow-[0_18px_36px_rgba(7,56,74,0.22)]",
+                        isDarkChrome ? "bg-[#d9c7aa] text-[#071214]" : "bg-brand-600 text-white",
+                      )}
                     >
                       Войти
                     </Link>
                     <Link
                       href="/sign-up?next=%2Fmenu"
                       onClick={() => setActivePanel(null)}
-                      className="flex min-h-14 items-center justify-center rounded-[16px] border border-black/10 bg-white/86 px-6 py-4 text-[17px] font-bold tracking-tight text-jeffreys-graphite shadow-[0_14px_32px_rgba(0,0,0,0.075)] backdrop-blur-xl"
+                      className={cn(
+                        "flex min-h-14 items-center justify-center rounded-[16px] border px-6 py-4 text-[17px] font-bold tracking-tight shadow-[0_14px_32px_rgba(0,0,0,0.075)] backdrop-blur-xl",
+                        isDarkChrome
+                          ? "border-[#f4ecdc]/10 bg-[#f4ecdc]/8 text-[#f4ecdc]"
+                          : "border-black/10 bg-white/86 text-jeffreys-graphite",
+                      )}
                     >
                       Создать аккаунт
                     </Link>
@@ -546,38 +1002,51 @@ export function CustomerMobileShell({
                 <div className="pb-8 pt-12">
                   <div className="mx-auto flex w-full max-w-[350px] flex-col">
                     <div className="text-center">
-                      <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-[24px] bg-brand-50 text-[28px] font-bold tracking-tight text-brand-700 shadow-[0_16px_38px_rgba(213,31,54,0.1)] ring-1 ring-brand-100">
-                        {getViewerInitials(viewer)}
-                      </div>
-                      <h2 className="mt-5 text-[28px] font-semibold leading-none tracking-tight text-stone-950">
+                      <h2 className={cn("text-[30px] font-semibold leading-none tracking-tight", isDarkChrome ? "text-[#f4ecdc]" : "text-stone-950")}>
                         {viewer.name}
                       </h2>
+                      <p className={cn("mt-3 text-[17px] font-medium leading-none", isDarkChrome ? "text-[#f4ecdc]/58" : "text-stone-500")}>
+                        +{viewer.phone.replace(/^7/, "7 ")}
+                      </p>
+                      <div
+                        className={cn(
+                          "mt-7 inline-flex min-h-11 items-center justify-center gap-2 rounded-[16px] px-5 text-[15px] font-bold",
+                          isDarkChrome ? "bg-[#d9c7aa]/14 text-[#f4ecdc]" : "bg-brand-50 text-brand-700",
+                        )}
+                      >
+                        <span>★</span>
+                        <span>{viewer.bonusBalance} бонусов на счёте</span>
+                      </div>
                     </div>
 
-                    <nav className="mt-8 space-y-2">
-                      <AccountMenuRow
-                        href="/profile"
-                        label="Личные данные"
-                        icon={<AccountPersonalIcon />}
-                        onNavigate={() => setActivePanel(null)}
-                      />
-                      <AccountMenuRow
-                        href="/orders"
-                        label="История покупок"
-                        icon={<AccountHistoryIcon />}
-                        onNavigate={() => setActivePanel(null)}
-                      />
-                      <AccountMenuRow
-                        href="/payment-methods"
-                        label="Способы оплаты"
-                        icon={<AccountPaymentIcon />}
-                        onNavigate={() => setActivePanel(null)}
-                      />
+                    <nav className="mt-8">
+                      <div className="grid grid-cols-2 gap-3">
+                        <AccountMenuRow
+                          href="/orders"
+                          label="История покупок"
+                          icon={<AccountHistoryIcon />}
+                          onNavigate={() => setActivePanel(null)}
+                          variant="tile"
+                        />
+                        <AccountMenuRow
+                          href="/payment-methods"
+                          label="Способы оплаты"
+                          icon={<AccountPaymentIcon />}
+                          onNavigate={() => setActivePanel(null)}
+                          variant="tile"
+                        />
+                      </div>
                     </nav>
 
-                    <div className="pt-10">
-                      <SignOutButton className="mx-auto flex min-h-11 items-center justify-center gap-2 rounded-[16px] px-6 text-[17px] font-bold tracking-tight text-brand-700 disabled:cursor-wait disabled:opacity-60">
-                        <span className="flex h-8 w-8 items-center justify-center rounded-[11px] bg-brand-50 text-brand-700">
+                    <div className="pt-8">
+                      <SignOutButton
+                        className={cn(
+                          "customer-account-row customer-signout-row mx-auto flex min-h-12 w-full items-center justify-center gap-3 rounded-[20px] px-6 text-[17px] font-bold tracking-tight disabled:cursor-wait disabled:opacity-60",
+                        )}
+                      >
+                        <span
+                          className="customer-account-row-icon customer-signout-row-icon flex h-9 w-9 items-center justify-center rounded-[12px]"
+                        >
                           <AccountSignOutIcon />
                         </span>
                       </SignOutButton>

@@ -52,14 +52,14 @@ function getHistoryStatusLabel(order: OrderDetails) {
 
 function getHistoryStatusTone(order: OrderDetails) {
   if (order.status === "READY") {
-    return "bg-[#dfeada] text-[#456f42]";
+    return "bg-[#e6f4e3] text-[#2d6b30]";
   }
 
   if (order.status === "CANCELLED") {
-    return "bg-[#ebe6e1] text-stone-500";
+    return "bg-stone-100 text-stone-500";
   }
 
-  return "bg-[#f4e5d2] text-[#8a613a]";
+  return "bg-jeffreys-fog text-stone-500";
 }
 
 function getProductMediaName(name: string) {
@@ -75,22 +75,56 @@ function getProductSizeLabel(name: string) {
   return match?.[1].replace(/\s+/, " ") ?? null;
 }
 
+function getDrinkCategory(name: string) {
+  const normalized = getProductMediaName(name).toLowerCase();
+
+  if (
+    normalized.includes("аляска") ||
+    normalized.includes("соленая карамель") ||
+    normalized.includes("лавандовый") ||
+    normalized.includes("урбеч")
+  ) {
+    return "В стиле Jeffreys";
+  }
+
+  if (
+    normalized.includes("матча") ||
+    normalized.includes("какао") ||
+    normalized.includes("клубничное")
+  ) {
+    return "Напитки";
+  }
+
+  if (
+    normalized.includes("листовой") ||
+    normalized.includes("кленовый") ||
+    normalized.includes("облепиховый") ||
+    normalized.includes("чай") ||
+    normalized.includes("тодди")
+  ) {
+    return "Чай";
+  }
+
+  return "Кофе";
+}
+
 function getRepeatProduct(item: OrderItemSummary): ProductSummary | null {
   if (!item.productId) {
     return null;
   }
 
   const sizeLabel = getProductSizeLabel(item.productName);
+  const name = getProductMediaName(item.productName);
 
   return {
     id: item.productId,
-    name: getProductMediaName(item.productName),
+    name,
     displayName: item.productName,
     description: null,
     price: item.unitPrice,
     available: true,
-    kind: sizeLabel ? "DRINK" : "FOOD",
-    category: sizeLabel ? "Напитки" : null,
+    kind: "DRINK",
+    category: getDrinkCategory(name),
     groupKey: item.productId,
     sizeLabel,
     sizeSort: null,
@@ -102,7 +136,7 @@ function OrderItemImage({ item }: { item: OrderItemSummary }) {
   const media = getProductMedia(mediaName);
 
   return (
-    <div className="relative h-[72px] w-[72px] shrink-0 overflow-hidden rounded-[20px] bg-[#f5f2ed]">
+    <div className="relative h-[72px] w-[72px] shrink-0 overflow-hidden rounded-[20px] bg-jeffreys-fog">
       {media ? (
         <Image
           src={media.src}
@@ -113,7 +147,7 @@ function OrderItemImage({ item }: { item: OrderItemSummary }) {
           style={{ objectPosition: media.objectPosition ?? "center center" }}
         />
       ) : (
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_42%,rgba(255,255,255,0.9),transparent_36%),linear-gradient(180deg,#f5eee6,#eee2d7)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_42%,rgba(255,255,255,0.92),transparent_36%),linear-gradient(180deg,#ffffff,#f0f0ee)]" />
       )}
     </div>
   );
@@ -195,7 +229,7 @@ function OrderAction({
       onClick={onClick}
       className="flex min-w-0 flex-col items-center gap-2 text-center transition active:scale-[0.97]"
     >
-      <span className="flex h-14 w-14 items-center justify-center rounded-full bg-[#efe2d8] text-[#6b4a38] shadow-[0_10px_24px_rgba(91,64,45,0.08)]">
+      <span className="flex h-14 w-14 items-center justify-center rounded-full bg-jeffreys-fog text-jeffreys-graphite shadow-[0_10px_24px_rgba(0,0,0,0.07)]">
         {icon}
       </span>
       <span className="min-h-9 text-[14px] font-medium leading-[1.12] tracking-tight text-stone-900">
@@ -255,7 +289,7 @@ export function OrderHistoryDetailClient({
       contentClassName="mt-8"
       header={header}
     >
-      <section className="rounded-[30px] bg-white/62 px-5 py-5 shadow-[0_16px_36px_rgba(31,23,18,0.07)] backdrop-blur-[20px]">
+      <section className="rounded-[30px] border border-black/[0.06] bg-white px-5 py-5 shadow-[0_16px_34px_rgba(0,0,0,0.06)]">
         <div className="flex items-start justify-between gap-3">
           <div>
             <h2 className="text-[22px] font-medium leading-none tracking-tight text-stone-950">
@@ -288,7 +322,7 @@ export function OrderHistoryDetailClient({
         </div>
       </section>
 
-      <section className="mt-5 overflow-hidden rounded-[28px] bg-white/58 shadow-[0_14px_34px_rgba(31,23,18,0.06)] backdrop-blur-[18px]">
+      <section className="mt-5 overflow-hidden rounded-[28px] border border-black/[0.06] bg-white shadow-[0_14px_34px_rgba(0,0,0,0.055)]">
         <h2 className="px-5 pt-5 text-[22px] font-medium leading-none tracking-tight text-stone-950">
           Товары из заказа
         </h2>

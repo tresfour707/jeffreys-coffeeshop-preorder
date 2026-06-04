@@ -18,48 +18,39 @@ export type MenuCategoryEntry = {
 
 export const menuCategoryDefinitions: MenuCategoryDefinition[] = [
   {
+    name: "Кофе",
+    slug: "coffee",
+    label: "Кофе",
+    preview: "Классические напитки",
+    imageSrc: "/category-images/drinks.png",
+    imageAlt: "Кофейный напиток",
+    imagePosition: "center center",
+  },
+  {
+    name: "В стиле Jeffreys",
+    slug: "jeffreys-style",
+    label: "В стиле Jeffreys",
+    preview: "Авторские позиции",
+    imageSrc: "/category-images/breakfast.png",
+    imageAlt: "Авторский кофейный напиток",
+    imagePosition: "center center",
+  },
+  {
     name: "Напитки",
     slug: "drinks",
-    label: "Кофе",
-    preview: "Кофе и напитки",
-    imageSrc: "/category-images/drinks.png",
-    imageAlt: "Капучино в белой чашке",
-    imagePosition: "center center",
-  },
-  {
-    name: "Завтрак",
-    slug: "breakfast",
-    label: "Завтрак",
-    preview: "Утро в кофейне",
-    imageSrc: "/category-images/breakfast.png",
-    imageAlt: "Круассан на белой тарелке",
-    imagePosition: "center center",
-  },
-  {
-    name: "Холодные закуски",
-    slug: "cold-snacks",
-    label: "Закуски и салаты",
-    preview: "Лёгкие закуски",
+    label: "Напитки",
+    preview: "Какао и матча",
     imageSrc: "/category-images/cold-snacks.png",
-    imageAlt: "Свежий салат в светлой тарелке",
+    imageAlt: "Напиток в стакане",
     imagePosition: "center center",
   },
   {
-    name: "Вторые блюда",
-    slug: "mains",
-    label: "Горячие блюда",
-    preview: "Сытные позиции",
+    name: "Чай",
+    slug: "tea",
+    label: "Чай",
+    preview: "Горячий чай",
     imageSrc: "/category-images/mains.png",
-    imageAlt: "Горячее блюдо на белой тарелке",
-    imagePosition: "center center",
-  },
-  {
-    name: "Десерт",
-    slug: "desserts",
-    label: "Десерты и йогурт",
-    preview: "Сладкое и выпечка",
-    imageSrc: "/category-images/desserts.png",
-    imageAlt: "Десерт с ягодами на белой тарелке",
+    imageAlt: "Чайный напиток",
     imagePosition: "center center",
   },
 ] as const;
@@ -109,62 +100,14 @@ export function sortProductVariants(products: MenuProductSummary["variants"]) {
   });
 }
 
-function getDrinkCollection(name: string) {
-  const normalized = name.toLowerCase();
-
-  if (
-    normalized.includes("айс") ||
-    normalized.includes("холод") ||
-    normalized.includes("лимонад") ||
-    normalized.includes("тоник") ||
-    normalized.includes("бамбл")
-  ) {
-    return "Холодные";
-  }
-
-  if (
-    normalized.includes("чай") ||
-    normalized.includes("улун") ||
-    normalized.includes("ассам") ||
-    normalized.includes("эрл") ||
-    normalized.includes("пуэр") ||
-    normalized.includes("те гуанинь") ||
-    normalized.includes("моли")
-  ) {
-    return "Чай";
-  }
-
-  if (
-    normalized.includes("эспрессо") ||
-    normalized.includes("американо") ||
-    normalized.includes("капучино") ||
-    normalized.includes("латте") ||
-    normalized.includes("раф") ||
-    normalized.includes("флэт") ||
-    normalized.includes("фильтр") ||
-    normalized.includes("мокко") ||
-    normalized.includes("какао")
-  ) {
-    return "Кофе";
-  }
-
-  return "Авторские";
-}
-
 export function getCategoryFilterChips(
   category: string,
   products: MenuProductSummary[],
 ) {
-  if (category !== "Напитки") {
-    return ["Все"];
-  }
+  void category;
+  void products;
 
-  const order = ["Кофе", "Холодные", "Чай", "Авторские"] as const;
-  const present = new Set<(typeof order)[number]>(
-    products.map((product) => getDrinkCollection(product.name)),
-  );
-
-  return ["Все", ...order.filter((item) => present.has(item))];
+  return ["Все"];
 }
 
 export function matchesCategoryFilter(
@@ -172,13 +115,9 @@ export function matchesCategoryFilter(
   category: string,
   filter: string,
 ) {
-  if (filter === "Все") {
-    return true;
-  }
+  void product;
+  void category;
+  void filter;
 
-  if (category !== "Напитки") {
-    return true;
-  }
-
-  return getDrinkCollection(product.name) === filter;
+  return true;
 }

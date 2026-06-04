@@ -141,7 +141,7 @@ export function PurchasedClient({
   return (
     <CustomerMobileShell viewer={viewer} className="pb-28 pt-0" contentClassName="mt-0">
       <section className="space-y-6">
-        <div className="sticky top-[82px] z-20 -mx-1 flex items-center gap-3 bg-white/78 px-1 py-2 backdrop-blur-[22px]">
+        <div className="sticky top-[118px] z-20 -mx-1 flex items-center gap-3 bg-white/78 px-1 py-2 backdrop-blur-[22px]">
           <BackLink />
 
           {isSearchOpen ? (
