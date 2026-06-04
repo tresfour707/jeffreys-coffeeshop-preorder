@@ -82,6 +82,11 @@ a {
   background: rgba(7, 56, 74, 0.18);
 }
 
+@keyframes progressStripe {
+  from { transform: translateX(0); }
+  to   { transform: translateX(25px); } /* 18px × √2 ≈ 25.45px — one stripe period at 45deg */
+}
+
 @keyframes cartBarRefresh {
   from {
     opacity: 0.82;

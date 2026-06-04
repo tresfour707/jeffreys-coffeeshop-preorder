@@ -131,8 +131,8 @@ function getOrderStatusCopy(order: UserOrderSummary, mode: "history" | "current"
     return {
       icon: <CheckStatusIcon />,
       label: mode === "current" ? "Готов к выдаче" : "Заказ завершён",
-      labelClassName: "text-[#456f42]",
-      iconClassName: "bg-[#dfeada] text-[#456f42]",
+      labelClassName: "text-[#2d6b30]",
+      iconClassName: "bg-[#e6f4e3] text-[#2d6b30]",
     };
   }
 
@@ -141,7 +141,7 @@ function getOrderStatusCopy(order: UserOrderSummary, mode: "history" | "current"
       icon: <CancelStatusIcon />,
       label: "Заказ отменён",
       labelClassName: "text-stone-500",
-      iconClassName: "bg-[#ebe6e1] text-stone-500",
+      iconClassName: "bg-stone-100 text-stone-500",
     };
   }
 
@@ -149,16 +149,16 @@ function getOrderStatusCopy(order: UserOrderSummary, mode: "history" | "current"
     return {
       icon: <PreparingStatusIcon />,
       label: "Готовится",
-      labelClassName: "text-[#5f754f]",
-      iconClassName: "bg-[#e7efdd] text-[#5f754f]",
+      labelClassName: "text-[#2d6b30]",
+      iconClassName: "bg-[#e6f4e3] text-[#2d6b30]",
     };
   }
 
   return {
     icon: <ClockStatusIcon />,
     label: mode === "current" ? "В очереди" : "Заказ в процессе",
-    labelClassName: "text-[#8a613a]",
-    iconClassName: "bg-[#f4e5d2] text-[#8a613a]",
+    labelClassName: "text-stone-500",
+    iconClassName: "bg-jeffreys-fog text-stone-500",
   };
 }
 
@@ -227,7 +227,7 @@ export function MyOrdersClient({
           }
         />
       ) : (
-        <div className="overflow-hidden rounded-[26px] bg-white/62 shadow-[0_16px_36px_rgba(31,23,18,0.065)] backdrop-blur-[18px]">
+        <div className="overflow-hidden rounded-[26px] border border-black/[0.06] bg-white shadow-[0_16px_34px_rgba(0,0,0,0.06)]">
           {orders.map((order) => {
             const status = getOrderStatusCopy(order, mode);
 

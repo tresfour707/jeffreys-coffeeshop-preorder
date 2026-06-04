@@ -12,10 +12,12 @@ export type ProductKind = "FOOD" | "DRINK";
 export type ViewerSummary = {
   id: string;
   name: string;
-  email: string;
+  phone: string;
+  email: string | null;
+  phoneVerified: boolean;
+  bonusBalance: number;
   birthDate: string | null;
   gender: string | null;
-  phone: string | null;
 };
 
 export type ProductSummary = {
@@ -78,6 +80,7 @@ export type OrderDetails = {
   confirmedAt: string;
   items: OrderItemSummary[];
   ordersAhead: number;
+  itemsAhead: number;
   canCancel: boolean;
 };
 

@@ -27,6 +27,23 @@ type CheckoutClientProps = {
 
 type PaymentChoice = PaymentMethod | "SBERPAY";
 
+function ChevronDownIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      className="h-5 w-5 text-brand-600"
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2.2"
+    >
+      <path d="m6 9 6 6 6-6" />
+    </svg>
+  );
+}
+
 function InfoIcon() {
   return (
     <svg
@@ -322,7 +339,7 @@ export function CheckoutClient({ viewer }: CheckoutClientProps) {
               <p className="text-[26px] font-bold leading-none tracking-tight text-jeffreys-graphite">
                 {formatMoney(summary.totalPrice)}
               </p>
-              <span className="text-[28px] leading-none text-brand-600">⌄</span>
+              <ChevronDownIcon />
             </div>
           </div>
 
