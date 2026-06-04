@@ -244,32 +244,58 @@ function getViewerInitials(viewer: ViewerSummary) {
   return (initials || viewer.phone[1] || "A").toUpperCase();
 }
 
-function AccountMenuRow({
+function formatViewerPhone(phone: string): string {
+  const digits = phone.replace(/\D/g, "");
+  const d = digits.startsWith("7") ? digits.slice(1) : digits;
+  if (d.length < 10) return `+7 ${d}`;
+  return `+7 (${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6, 8)}-${d.slice(8, 10)}`;
+}
+
+function AccountTile({
   href,
   label,
   icon,
   onNavigate,
+  wide,
 }: {
   href: string;
   label: string;
   icon: ReactNode;
   onNavigate: () => void;
+  wide?: boolean;
 }) {
+  if (wide) {
+    return (
+      <Link
+        href={href}
+        onClick={onNavigate}
+        className="flex min-h-[64px] items-center gap-3.5 rounded-[20px] bg-jeffreys-graphite px-4 py-4 transition active:scale-[0.98] active:opacity-90"
+      >
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[11px] bg-white/10 text-white">
+          {icon}
+        </span>
+        <span className="text-[16px] font-semibold tracking-tight text-white">
+          {label}
+        </span>
+        <span className="ml-auto text-white/30">
+          <AccountChevron />
+        </span>
+      </Link>
+    );
+  }
+
   return (
     <Link
       href={href}
       onClick={onNavigate}
-      className="flex min-h-[54px] items-center justify-between gap-4 rounded-[18px] px-2 text-jeffreys-graphite transition active:scale-[0.99] active:bg-white/72"
+      className="flex min-h-[96px] flex-col justify-between rounded-[20px] bg-jeffreys-graphite p-4 transition active:scale-[0.98] active:opacity-90"
     >
-      <span className="flex min-w-0 items-center gap-3">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[12px] bg-brand-50 text-brand-700">
-          {icon}
-        </span>
-        <span className="block truncate text-[19px] font-semibold leading-tight tracking-tight text-jeffreys-graphite">
-          {label}
-        </span>
+      <span className="flex h-9 w-9 items-center justify-center rounded-[11px] bg-white/10 text-white">
+        {icon}
       </span>
-      <AccountChevron />
+      <span className="mt-3 block text-[15px] font-semibold leading-tight tracking-tight text-white">
+        {label}
+      </span>
     </Link>
   );
 }
@@ -424,11 +450,10 @@ export function CustomerMobileShell({
             isMenuOpen ? "translate-x-0" : "-translate-x-full",
           )}
         >
-          <div className="pointer-events-none absolute inset-0 bg-white/82" />
+          <div className="pointer-events-none absolute inset-0 bg-[#f9f7f5]/90" />
           <div className="pointer-events-none absolute inset-0">
             <div className="absolute left-0 top-0 h-full w-[6px] bg-brand-600" />
-            <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(213,31,54,0.065)_0%,rgba(255,255,255,0)_36%),linear-gradient(180deg,rgba(255,255,255,0.84)_0%,rgba(243,243,241,0.74)_100%)]" />
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(9,9,9,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(9,9,9,0.035)_1px,transparent_1px)] bg-[length:34px_34px] opacity-45" />
+            <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(213,31,54,0.07)_0%,rgba(255,255,255,0)_40%),linear-gradient(180deg,rgba(255,255,255,0.6)_0%,rgba(245,242,238,0.4)_100%)]" />
           </div>
 
           <div className="relative z-10 h-full overflow-y-scroll overscroll-y-contain px-5 pb-24 pt-6 [-webkit-overflow-scrolling:touch] [touch-action:pan-y]">
@@ -490,11 +515,10 @@ export function CustomerMobileShell({
             isAccountOpen ? "translate-x-0" : "translate-x-full",
           )}
         >
-          <div className="pointer-events-none absolute inset-0 bg-white/82" />
+          <div className="pointer-events-none absolute inset-0 bg-[#f9f7f5]/90" />
           <div className="pointer-events-none absolute inset-0">
             <div className="absolute right-0 top-0 h-full w-[6px] bg-brand-600" />
-            <div className="absolute inset-0 bg-[linear-gradient(225deg,rgba(213,31,54,0.06)_0%,rgba(255,255,255,0)_38%),linear-gradient(180deg,rgba(255,255,255,0.86)_0%,rgba(243,243,241,0.76)_100%)]" />
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(9,9,9,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(9,9,9,0.035)_1px,transparent_1px)] bg-[length:34px_34px] opacity-42" />
+            <div className="absolute inset-0 bg-[linear-gradient(225deg,rgba(213,31,54,0.07)_0%,rgba(255,255,255,0)_40%),linear-gradient(180deg,rgba(255,255,255,0.6)_0%,rgba(245,242,238,0.4)_100%)]" />
           </div>
 
           <div className="relative z-10 h-full overflow-y-scroll overscroll-y-contain px-5 pb-24 pt-6 [-webkit-overflow-scrolling:touch] [touch-action:pan-y]">
@@ -543,45 +567,68 @@ export function CustomerMobileShell({
                   </div>
                 </div>
               ) : (
-                <div className="pb-8 pt-12">
+                <div className="pb-8 pt-10">
                   <div className="mx-auto flex w-full max-w-[350px] flex-col">
-                    <div className="text-center">
-                      <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-[24px] bg-brand-50 text-[28px] font-bold tracking-tight text-brand-700 shadow-[0_16px_38px_rgba(213,31,54,0.1)] ring-1 ring-brand-100">
+
+                    {/* Avatar + name + phone */}
+                    <div className="flex items-center gap-4">
+                      <div className="flex h-[58px] w-[58px] shrink-0 items-center justify-center rounded-full bg-brand-600 text-[20px] font-bold tracking-tight text-white shadow-[0_10px_28px_rgba(192,25,49,0.28)]">
                         {getViewerInitials(viewer)}
                       </div>
-                      <h2 className="mt-5 text-[28px] font-semibold leading-none tracking-tight text-stone-950">
-                        {viewer.name}
-                      </h2>
+                      <div className="min-w-0">
+                        <h2 className="truncate text-[22px] font-bold leading-none tracking-tight text-jeffreys-graphite">
+                          {viewer.name}
+                        </h2>
+                        <p className="mt-1.5 text-[14px] font-medium text-stone-500">
+                          {formatViewerPhone(viewer.phone)}
+                        </p>
+                      </div>
                     </div>
 
-                    <nav className="mt-8 space-y-2">
-                      <AccountMenuRow
+                    {/* Bonus balance */}
+                    <div className="mt-4 flex items-center gap-2.5 rounded-[16px] bg-brand-50 px-4 py-3">
+                      <svg aria-hidden="true" viewBox="0 0 24 24" className="h-4 w-4 shrink-0 text-brand-600" fill="currentColor">
+                        <path d="M12 2l2.9 6.3 6.8.6-5 4.6 1.5 6.7L12 17l-6.2 3.2 1.5-6.7-5-4.6 6.8-.6z" />
+                      </svg>
+                      <p className="text-[14px] font-semibold text-brand-700">
+                        {viewer.bonusBalance} {viewer.bonusBalance === 1 ? "бонус" : viewer.bonusBalance >= 2 && viewer.bonusBalance <= 4 ? "бонуса" : "бонусов"} на счёте
+                      </p>
+                    </div>
+
+                    {/* 2-col tiles */}
+                    <div className="mt-5 grid grid-cols-2 gap-3">
+                      <AccountTile
                         href="/profile"
                         label="Личные данные"
                         icon={<AccountPersonalIcon />}
                         onNavigate={() => setActivePanel(null)}
                       />
-                      <AccountMenuRow
+                      <AccountTile
                         href="/orders"
-                        label="История покупок"
+                        label="История заказов"
                         icon={<AccountHistoryIcon />}
                         onNavigate={() => setActivePanel(null)}
                       />
-                      <AccountMenuRow
+                    </div>
+
+                    {/* Full-width tile */}
+                    <div className="mt-3">
+                      <AccountTile
                         href="/payment-methods"
                         label="Способы оплаты"
                         icon={<AccountPaymentIcon />}
                         onNavigate={() => setActivePanel(null)}
+                        wide
                       />
-                    </nav>
+                    </div>
 
-                    <div className="pt-10">
-                      <SignOutButton className="mx-auto flex min-h-11 items-center justify-center gap-2 rounded-[16px] px-6 text-[17px] font-bold tracking-tight text-brand-700 disabled:cursor-wait disabled:opacity-60">
-                        <span className="flex h-8 w-8 items-center justify-center rounded-[11px] bg-brand-50 text-brand-700">
-                          <AccountSignOutIcon />
-                        </span>
+                    {/* Sign out */}
+                    <div className="mt-5">
+                      <SignOutButton className="flex w-full min-h-[52px] items-center justify-center gap-2.5 rounded-[16px] bg-brand-50 px-6 text-[16px] font-semibold tracking-tight text-brand-700 transition active:scale-[0.98] active:bg-brand-100 disabled:cursor-wait disabled:opacity-60">
+                        <AccountSignOutIcon />
                       </SignOutButton>
                     </div>
+
                   </div>
                 </div>
               )}

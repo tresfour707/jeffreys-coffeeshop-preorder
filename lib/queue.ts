@@ -118,12 +118,19 @@ export function serializeQueueOrder(
 
 export function serializeOrderDetails(
   order: OrderWithItems,
-  activeOrderIds: string[],
+  activeOrders: OrderWithItems[],
 ): OrderDetails {
+  const activeOrderIds = activeOrders.map((o) => o.id);
   const { publicOrderNumber, confirmedAt } = requireConfirmedOrderFields(order);
   const visibleStatus = getVisibleStatus(order, activeOrderIds);
   const queueIndex = activeOrderIds.indexOf(order.id);
   const ordersAhead = queueIndex >= 0 ? queueIndex : 0;
+  const itemsAhead =
+    queueIndex > 0
+      ? activeOrders
+          .slice(0, queueIndex)
+          .reduce((sum, o) => sum + o.items.reduce((s, i) => s + i.quantity, 0), 0)
+      : 0;
 
   return {
     id: order.id,
@@ -135,6 +142,7 @@ export function serializeOrderDetails(
     confirmedAt: confirmedAt.toISOString(),
     items: serializeOrderItems(order.items),
     ordersAhead,
+    itemsAhead,
     canCancel:
       order.source === "ONLINE" && visibleStatus === OrderStatus.WAITING,
   };

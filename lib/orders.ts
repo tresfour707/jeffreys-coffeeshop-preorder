@@ -39,6 +39,7 @@ type CreateDemoPaymentInput = {
   userId: string;
   customerName: string;
   customerEmail: string | null;
+  bonusToUse: number;
 };
 
 type CancelActor = "CUSTOMER" | "STAFF";
@@ -220,12 +221,12 @@ export async function getOrderDetails(orderId: string, viewerUserId?: string) {
     return null;
   }
 
-  const activeOrderIds = await getActiveOrderIds(prisma);
-  return serializeOrderDetails(order, activeOrderIds);
+  const activeOrders = await listActiveOrders(prisma);
+  return serializeOrderDetails(order, activeOrders);
 }
 
 export async function listOrdersForUser(viewerUserId: string): Promise<UserOrderSummary[]> {
-  const [orders, activeOrderIds] = await Promise.all([
+  const [orders, activeOrders] = await Promise.all([
     prisma.order.findMany({
       where: {
         userId: viewerUserId,
@@ -247,11 +248,11 @@ export async function listOrdersForUser(viewerUserId: string): Promise<UserOrder
       ],
       include: orderWithRelationsInclude,
     }),
-    getActiveOrderIds(prisma),
+    listActiveOrders(prisma),
   ]);
 
   return orders.map((order) => {
-    const details = serializeOrderDetails(order, activeOrderIds);
+    const details = serializeOrderDetails(order, activeOrders);
 
     return {
       id: details.id,
@@ -268,7 +269,7 @@ export async function listOrdersForUser(viewerUserId: string): Promise<UserOrder
 export async function listTrackableOrdersForUser(
   viewerUserId: string,
 ): Promise<UserOrderSummary[]> {
-  const [orders, activeOrderIds] = await Promise.all([
+  const [orders, activeOrders] = await Promise.all([
     prisma.order.findMany({
       where: {
         userId: viewerUserId,
@@ -294,11 +295,11 @@ export async function listTrackableOrdersForUser(
       ],
       include: orderWithRelationsInclude,
     }),
-    getActiveOrderIds(prisma),
+    listActiveOrders(prisma),
   ]);
 
   return orders.map((order) => {
-    const details = serializeOrderDetails(order, activeOrderIds);
+    const details = serializeOrderDetails(order, activeOrders);
 
     return {
       id: details.id,
@@ -435,8 +436,8 @@ export async function createOfflineOrder(
       throw new AppError("Не удалось загрузить только что созданный заказ.", 500);
     }
 
-    const activeOrderIds = await getActiveOrderIds(tx);
-    return serializeOrderDetails(refreshedOrder, activeOrderIds);
+    const activeOrders = await listActiveOrders(tx);
+    return serializeOrderDetails(refreshedOrder, activeOrders);
   });
 }
 
@@ -452,6 +453,24 @@ export async function createDemoPayment(
       0,
     );
 
+    // Применяем бонусную скидку (1 бонус = 1 рубль = 100 копеек)
+    const user = await tx.user.findUnique({
+      where: { id: input.userId },
+      select: { bonusBalance: true },
+    });
+    const actualBalance = user?.bonusBalance ?? 0;
+    const maxBonus = Math.floor(totalPrice / 100);
+    const bonusToUse = Math.min(Math.max(0, input.bonusToUse), maxBonus, actualBalance);
+    const bonusDiscount = bonusToUse * 100;
+    const paymentAmount = totalPrice - bonusDiscount;
+
+    if (bonusToUse > 0) {
+      await tx.user.update({
+        where: { id: input.userId },
+        data: { bonusBalance: { decrement: bonusToUse } },
+      });
+    }
+
     const createdOrder = await tx.order.create({
       data: {
         source: OrderSource.ONLINE,
@@ -464,7 +483,7 @@ export async function createDemoPayment(
         },
         payment: {
           create: {
-            amount: totalPrice,
+            amount: paymentAmount,
             method:
               input.method === "DEMO_SBP"
                 ? PaymentMethod.DEMO_SBP
@@ -510,7 +529,7 @@ export async function resolveDemoPayment(
     ensureViewerCanAccessOrder(payment.order, viewerUserId);
 
     if (payment.status === PaymentStatus.SUCCEEDED) {
-      const activeOrderIds = await getActiveOrderIds(tx);
+      const activeOrders = await listActiveOrders(tx);
 
       return {
         paymentId: payment.id,
@@ -518,7 +537,7 @@ export async function resolveDemoPayment(
         order:
           payment.order.publicOrderNumber != null &&
           payment.order.confirmedAt != null
-            ? serializeOrderDetails(payment.order, activeOrderIds)
+            ? serializeOrderDetails(payment.order, activeOrders)
             : null,
       };
     }
@@ -552,18 +571,26 @@ export async function resolveDemoPayment(
 
       await ensureQueueState(tx);
 
+      const bonusEarned = Math.floor(payment.amount / 1000);
+      if (payment.order.userId && bonusEarned > 0) {
+        await tx.user.update({
+          where: { id: payment.order.userId },
+          data: { bonusBalance: { increment: bonusEarned } },
+        });
+      }
+
       const refreshedOrder = await getOrderRecord(tx, payment.order.id);
 
       if (!refreshedOrder) {
         throw new AppError("Не удалось загрузить оплаченный заказ.", 500);
       }
 
-      const activeOrderIds = await getActiveOrderIds(tx);
+      const activeOrders = await listActiveOrders(tx);
 
       return {
         paymentId: payment.id,
         status: PaymentStatus.SUCCEEDED,
-        order: serializeOrderDetails(refreshedOrder, activeOrderIds),
+        order: serializeOrderDetails(refreshedOrder, activeOrders),
       };
     }
 
@@ -628,10 +655,10 @@ export async function cancelOrder(
       throw new AppError("Сотрудник может отменять только офлайн-заказы.", 403);
     }
 
-    const activeOrderIds = await getActiveOrderIds(tx);
+    const activeOrders = await listActiveOrders(tx);
     const currentView =
       order.publicOrderNumber != null && order.confirmedAt != null
-        ? serializeOrderDetails(order, activeOrderIds)
+        ? serializeOrderDetails(order, activeOrders)
         : null;
 
     if (actor === "CUSTOMER" && currentView?.status !== OrderStatus.WAITING) {
@@ -673,7 +700,7 @@ export async function cancelOrder(
       throw new AppError("Отменённый заказ больше недоступен в customer view.", 409);
     }
 
-    const refreshedActiveOrderIds = await getActiveOrderIds(tx);
-    return serializeOrderDetails(refreshedOrder, refreshedActiveOrderIds);
+    const refreshedActiveOrders = await listActiveOrders(tx);
+    return serializeOrderDetails(refreshedOrder, refreshedActiveOrders);
   });
 }

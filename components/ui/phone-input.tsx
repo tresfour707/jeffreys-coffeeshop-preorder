@@ -1,6 +1,6 @@
 "use client";
 
-import { type ChangeEvent } from "react";
+import { type ChangeEvent, type KeyboardEvent } from "react";
 
 type PhoneInputProps = {
   value: string;
@@ -25,6 +25,13 @@ function formatDisplayValue(digits: string): string {
 }
 
 export function PhoneInput({ value, onChange, className, autoFocus }: PhoneInputProps) {
+  function handleKeyDown(e: KeyboardEvent<HTMLInputElement>) {
+    if (e.key === "Backspace" || e.key === "Delete") {
+      e.preventDefault();
+      onChange(value.slice(0, -1));
+    }
+  }
+
   function handleChange(e: ChangeEvent<HTMLInputElement>) {
     const raw = e.target.value.replace(/\D/g, "");
     let digits = raw;
@@ -40,6 +47,7 @@ export function PhoneInput({ value, onChange, className, autoFocus }: PhoneInput
       inputMode="numeric"
       value={formatDisplayValue(value)}
       onChange={handleChange}
+      onKeyDown={handleKeyDown}
       placeholder="+7 (___) ___-__-__"
       autoComplete="tel"
       autoFocus={autoFocus}

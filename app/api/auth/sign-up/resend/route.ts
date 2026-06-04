@@ -13,30 +13,19 @@ export async function POST(request: Request) {
   try {
     const body = await request.json().catch(() => null);
     const phone = typeof body?.phone === "string" ? normalizePhone(body.phone) : "";
+    const rawPurpose = typeof body?.purpose === "string" ? body.purpose : "VERIFY";
+    const purpose = rawPurpose === "LOGIN" ? "LOGIN" : "VERIFY";
 
     if (!phone) {
       throw new AppError("Укажите телефон.", 400);
     }
 
-    const user = await prisma.user.findUnique({
-      where: { phone },
-      select: { id: true, phoneVerified: true },
-    });
-
-    if (!user) {
-      throw new AppError("Аккаунт не найден.", 404);
-    }
-
-    if (user.phoneVerified) {
-      throw new AppError("Номер уже подтверждён.", 400);
-    }
-
     const code = generateOtpCode();
     const expiresAt = new Date(Date.now() + OTP_TTL_MINUTES * 60 * 1000);
 
-    await prisma.otpCode.deleteMany({ where: { phone, purpose: "VERIFY" } });
+    await prisma.otpCode.deleteMany({ where: { phone, purpose } });
     await prisma.otpCode.create({
-      data: { phone, code, purpose: "VERIFY", expiresAt },
+      data: { phone, code, purpose, expiresAt },
     });
 
     return NextResponse.json({ demoCode: code });

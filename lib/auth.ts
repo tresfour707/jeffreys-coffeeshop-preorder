@@ -16,6 +16,7 @@ export type AuthUser = {
   phone: string;
   email: string | null;
   phoneVerified: boolean;
+  bonusBalance: number;
   birthDate: string | null;
   gender: string | null;
 };
@@ -26,6 +27,7 @@ function toAuthUser(user: {
   phone: string;
   email: string | null;
   phoneVerified: boolean;
+  bonusBalance: number;
   birthDate: Date | null;
   gender: string | null;
 }): AuthUser {
@@ -35,6 +37,7 @@ function toAuthUser(user: {
     phone: user.phone,
     email: user.email,
     phoneVerified: user.phoneVerified,
+    bonusBalance: user.bonusBalance,
     birthDate: user.birthDate?.toISOString() ?? null,
     gender: user.gender,
   };
@@ -136,6 +139,7 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
           phone: true,
           email: true,
           phoneVerified: true,
+          bonusBalance: true,
           birthDate: true,
           gender: true,
         },

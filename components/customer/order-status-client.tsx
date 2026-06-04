@@ -18,178 +18,119 @@ type OrderStatusClientProps = {
   viewer: ViewerSummary;
 };
 
-const progressSteps = [
-  {
-    id: "paid",
-    title: "Оплачен",
-  },
-  {
-    id: "queue",
-    title: "В очереди",
-  },
-  {
-    id: "preparing",
-    title: "Готовится",
-  },
-  {
-    id: "ready",
-    title: "Готов",
-  },
-] as const;
-
-function getProgressIndex(status: OrderDetails["status"]) {
-  switch (status) {
-    case "WAITING":
-      return 1;
-    case "PREPARING":
-      return 2;
-    case "READY":
-      return 3;
-    case "CANCELLED":
-      return -1;
-    default:
-      return 0;
-  }
-}
+// ─── helpers ────────────────────────────────────────────────
 
 function getOrdersWord(count: number) {
-  const mod10 = count % 10;
-  const mod100 = count % 100;
-
-  if (mod10 === 1 && mod100 !== 11) {
-    return "заказ";
-  }
-
-  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) {
-    return "заказа";
-  }
-
+  const m10 = count % 10, m100 = count % 100;
+  if (m10 === 1 && m100 !== 11) return "заказ";
+  if (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14)) return "заказа";
   return "заказов";
 }
 
-function getQueueText(order: OrderDetails) {
-  if (order.status === "READY") {
-    return "Можно забирать";
-  }
-
-  if (order.status === "PREPARING") {
-    return "Готовят сейчас";
-  }
-
-  if (order.status === "CANCELLED") {
-    return "Не в очереди";
-  }
-
-  if (order.ordersAhead === 0) {
-    return "Вы следующие";
-  }
-
-  return `${order.ordersAhead} ${getOrdersWord(order.ordersAhead)}`;
+function getQueueLabel(order: OrderDetails) {
+  if (order.status === "READY")     return "Можно забирать!";
+  if (order.status === "PREPARING") return "Готовят сейчас";
+  if (order.status === "CANCELLED") return "Заказ отменён";
+  if (order.ordersAhead === 0)      return "Вы следующие";
+  return `${order.ordersAhead} ${getOrdersWord(order.ordersAhead)} впереди`;
 }
 
-function CheckIcon() {
+function getTimeEstimate(order: OrderDetails): string | null {
+  if (order.status === "WAITING" && order.itemsAhead > 0) {
+    const mins = Math.ceil((order.itemsAhead * 2.5) / 5) * 5;
+    return `~${mins} мин`;
+  }
+  return null;
+}
+
+function getProgressFill(order: OrderDetails): number {
+  if (order.status === "READY")     return 100;
+  if (order.status === "CANCELLED") return 0;
+  if (order.status === "PREPARING") return 93;
+  if (order.ordersAhead === 0)      return 88;
+  return Math.max(5, Math.round(88 - order.ordersAhead * 7));
+}
+
+// ─── progress bar ───────────────────────────────────────────
+
+function ProgressBar({ order }: { order: OrderDetails }) {
+  const fill      = getProgressFill(order);
+  const isReady   = order.status === "READY";
+  const isCancelled = order.status === "CANCELLED";
+  const isActive  = !isReady && !isCancelled;
+
+  const fillColor = isReady ? "#2d6b30" : isCancelled ? "#ccc8c3" : "#c01931";
+
   return (
-    <svg
-      aria-hidden="true"
-      viewBox="0 0 24 24"
-      className="h-4 w-4"
-      fill="none"
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth="3"
+    <div
+      className="relative h-[34px] w-full overflow-hidden rounded-full"
+      style={{ background: "#ede9e5" }}
+      role="progressbar"
+      aria-valuenow={fill}
+      aria-valuemin={0}
+      aria-valuemax={100}
     >
-      <path d="m5 12 4.2 4L19 7" />
-    </svg>
-  );
-}
+      {/* Filled portion */}
+      <div
+        className="absolute inset-y-0 left-0 rounded-full transition-[width] duration-700 ease-out"
+        style={{ width: `${fill}%`, background: fillColor }}
+      >
+        {/* Diagonal stripes — translateX animation for seamless loop */}
+        {isActive ? (
+          <div
+            className="absolute inset-y-0"
+            style={{
+              /* Extra-wide so edges never show during animation */
+              left: "-30px",
+              right: "-30px",
+              backgroundImage: [
+                "repeating-linear-gradient(",
+                "  -45deg,",
+                "  transparent 0px, transparent 9px,",
+                "  rgba(255,255,255,0.13) 9px, rgba(255,255,255,0.13) 18px",
+                ")",
+              ].join(""),
+              animation: "progressStripe 1.5s linear infinite",
+            }}
+          />
+        ) : null}
 
-function MetricCard({
-  label,
-  value,
-}: {
-  label: string;
-  value: string;
-}) {
-  return (
-    <div className="rounded-[24px] bg-jeffreys-fog px-4 py-4">
-      <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-stone-400">
-        {label}
-      </p>
-      <p className="mt-2 text-[17px] font-semibold leading-tight tracking-tight text-jeffreys-graphite">
-        {value}
-      </p>
+        {/* Shine — top-to-bottom highlight for pill depth */}
+        <div
+          className="pointer-events-none absolute inset-0 rounded-full"
+          style={{
+            background:
+              "linear-gradient(to bottom, rgba(255,255,255,0.22) 0%, transparent 50%)",
+          }}
+        />
+      </div>
     </div>
   );
 }
 
-function getStatusTitle(order: OrderDetails) {
-  if (order.status === "READY") {
-    return "Заказ готов";
-  }
+// ─── main component ─────────────────────────────────────────
 
-  if (order.status === "PREPARING") {
-    return "Заказ готовится";
-  }
-
-  if (order.status === "CANCELLED") {
-    return "Заказ отменён";
-  }
-
-  return "Заказ оплачен";
-}
-
-function getStatusTone(order: OrderDetails) {
-  if (order.status === "READY") {
-    return "bg-[#e6f4e3] text-[#2d6b30]";
-  }
-
-  if (order.status === "PREPARING") {
-    return "bg-[#e6f4e3] text-[#2d6b30]";
-  }
-
-  if (order.status === "CANCELLED") {
-    return "bg-stone-100 text-stone-500";
-  }
-
-  return "bg-jeffreys-fog text-stone-500";
-}
-
-export function OrderStatusClient({
-  initialOrder,
-  viewer,
-}: OrderStatusClientProps) {
+export function OrderStatusClient({ initialOrder, viewer }: OrderStatusClientProps) {
   const [order, setOrder] = useState(initialOrder);
   const [error, setError] = useState<string | null>(null);
 
   async function refreshOrder() {
     try {
-      const response = await fetch(`/api/orders/${order.id}`, {
-        cache: "no-store",
-      });
-      const data = (await response.json()) as OrderDetails | { error?: string };
-
-      if (!response.ok || !("id" in data)) {
-        throw new Error(
-          "error" in data && data.error ? data.error : "Не удалось обновить заказ.",
-        );
+      const res  = await fetch(`/api/orders/${order.id}`, { cache: "no-store" });
+      const data = (await res.json()) as OrderDetails | { error?: string };
+      if (!res.ok || !("id" in data)) {
+        throw new Error("error" in data && data.error ? data.error : "Не удалось обновить заказ.");
       }
-
       setOrder(data);
       setError(null);
-    } catch (requestError) {
-      setError(
-        requestError instanceof Error
-          ? requestError.message
-          : "Не удалось обновить заказ.",
-      );
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Не удалось обновить заказ.");
     }
   }
 
   usePolling(refreshOrder, ORDER_STATUS_POLL_INTERVAL_MS);
 
-  const progressIndex = getProgressIndex(order.status);
-  const isCancelled = order.status === "CANCELLED";
+  const timeEstimate = getTimeEstimate(order);
 
   return (
     <CustomerMobileShell
@@ -204,124 +145,71 @@ export function OrderStatusClient({
         </section>
       }
     >
-      <section className="rounded-[34px] border border-black/[0.06] bg-white px-5 py-5 shadow-[0_16px_34px_rgba(0,0,0,0.06)]">
-        <div className="flex items-start justify-between gap-4">
+      {/* ── Monolith card ── */}
+      <section className="rounded-[34px] border border-black/[0.06] bg-white shadow-[0_16px_34px_rgba(0,0,0,0.07)]">
+
+        {/* Progress bar + status */}
+        <div className="px-5 pt-5">
+          <ProgressBar order={order} />
+
+          <div className="mt-4 flex items-start justify-between gap-3">
+            <div>
+              <p
+                className={cn(
+                  "text-[24px] font-bold leading-tight tracking-tight",
+                  order.status === "READY"
+                    ? "text-[#2d6b30]"
+                    : order.status === "CANCELLED"
+                      ? "text-stone-400"
+                      : "text-stone-950",
+                )}
+              >
+                {getQueueLabel(order)}
+              </p>
+              {timeEstimate ? (
+                <p className="mt-1 text-[15px] font-medium text-stone-400">
+                  {timeEstimate}
+                </p>
+              ) : null}
+            </div>
+            <StatusBadge status={order.status} className="mt-0.5 shrink-0" />
+          </div>
+        </div>
+
+        {/* Dashed divider */}
+        <div className="mx-5 my-5 border-t border-dashed border-stone-200" />
+
+        {/* Meta row: order number + datetime + total */}
+        <div className="flex items-center justify-between gap-4 px-5">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-stone-400">
-              Номер
-            </p>
-            <p className="mt-3 text-[54px] font-semibold leading-none tracking-tight text-stone-950">
+            <p className="text-[24px] font-bold tracking-tight text-stone-950">
               {formatOrderNumber(order.publicOrderNumber)}
             </p>
+            <p className="mt-0.5 text-[12px] font-medium text-stone-400">
+              {formatDateTime(order.confirmedAt)}
+            </p>
           </div>
-
-          <div className="flex min-w-[112px] flex-col items-stretch gap-2">
-            <StatusBadge status={order.status} className="bg-white/82" />
-            <span
-              className={cn(
-                "rounded-full px-3.5 py-2 text-center text-[13px] font-semibold",
-                getStatusTone(order),
-              )}
-            >
-              {getStatusTitle(order)}
-            </span>
-          </div>
-        </div>
-
-        <div className="mt-5 rounded-[24px] bg-jeffreys-fog px-4 py-4">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-stone-400">
-                Перед вами
-              </p>
-              <p className="mt-2 text-[24px] font-semibold leading-none tracking-tight text-stone-950">
-                {getQueueText(order)}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-3 grid grid-cols-2 gap-3">
-          <MetricCard label="Сумма" value={formatMoney(order.totalPrice)} />
-          <MetricCard label="Создан" value={formatDateTime(order.confirmedAt)} />
-        </div>
-      </section>
-
-      <section className="mt-4 rounded-[34px] border border-black/[0.06] bg-white px-5 py-5 shadow-[0_16px_34px_rgba(0,0,0,0.06)]">
-        <div className="flex items-center justify-between gap-4">
-          <h2 className="text-[25px] font-medium leading-none tracking-tight text-stone-950">
-            Процесс
-          </h2>
-          <span className="text-[13px] font-medium text-stone-400">
-            {isCancelled ? "остановлен" : `${progressIndex + 1} из ${progressSteps.length}`}
-          </span>
-        </div>
-
-        <div className="mt-5 space-y-3">
-          {progressSteps.map((step, index) => {
-            const isDone = !isCancelled && index < progressIndex;
-            const isActive = !isCancelled && index === progressIndex;
-            const isReadyDone = order.status === "READY" && index === progressIndex;
-            const isChecked = isDone || isReadyDone;
-
-            return (
-              <div key={step.id} className="flex items-center gap-3">
-                <span
-                  className={cn(
-                    "flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[13px] font-semibold transition",
-                    isChecked
-                      ? "bg-jeffreys-graphite text-white"
-                      : isActive
-                        ? "bg-[#2d6b30] text-white"
-                        : "bg-jeffreys-fog text-stone-400",
-                  )}
-                >
-                  {isChecked ? <CheckIcon /> : index + 1}
-                </span>
-
-                <div
-                  className={cn(
-                    "flex min-h-12 flex-1 items-center justify-between rounded-[20px] px-4 transition",
-                    isActive
-                      ? "bg-[#e6f4e3] text-[#2d6b30]"
-                      : isChecked
-                        ? "bg-stone-100 text-stone-500"
-                        : "bg-jeffreys-fog text-stone-900",
-                  )}
-                >
-                  <p className="text-[16px] font-semibold tracking-tight">{step.title}</p>
-                  {isActive ? (
-                    <span className="text-[13px] font-medium text-[#2d6b30]">сейчас</span>
-                  ) : null}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
-      <section className="mt-4 rounded-[34px] border border-black/[0.06] bg-white px-5 py-5 shadow-[0_16px_34px_rgba(0,0,0,0.055)]">
-        <div className="flex items-center justify-between gap-4">
-          <h2 className="text-[25px] font-medium leading-none tracking-tight text-stone-950">
-            Состав
-          </h2>
-          <span className="text-[15px] font-semibold text-stone-500">
+          <p className="text-[24px] font-bold tracking-tight text-stone-950">
             {formatMoney(order.totalPrice)}
-          </span>
+          </p>
         </div>
 
-        <div className="mt-4 divide-y divide-stone-200/80">
+        {/* Items list */}
+        <div className="mt-3 divide-y divide-stone-100 pb-5">
           {order.items.map((item) => (
-            <div key={item.id} className="flex items-start justify-between gap-4 py-3">
+            <div
+              key={item.id}
+              className="flex items-center justify-between gap-4 px-5 py-3"
+            >
               <div className="min-w-0">
-                <p className="line-clamp-2 text-[15px] font-semibold leading-[1.18] tracking-tight text-stone-950">
+                <p className="line-clamp-2 text-[15px] font-semibold leading-snug tracking-tight text-stone-900">
                   {item.productName}
                 </p>
-                <p className="mt-1 text-[13px] text-stone-500">
+                <p className="mt-0.5 text-[12px] text-stone-400">
                   {item.quantity} шт.
                 </p>
               </div>
-              <p className="shrink-0 text-[14px] font-semibold text-stone-950">
+              <p className="shrink-0 text-[14px] font-semibold text-stone-600">
                 {formatMoney(item.subtotal)}
               </p>
             </div>

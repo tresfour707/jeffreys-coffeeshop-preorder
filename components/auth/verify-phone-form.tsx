@@ -1,18 +1,22 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 
 type VerifyPhoneFormProps = {
   phone: string;
   demoCode: string;
+  purpose: string;
   nextPath: string;
 };
 
-export function VerifyPhoneForm({ phone, demoCode, nextPath }: VerifyPhoneFormProps) {
+type Step = "code" | "name";
+
+export function VerifyPhoneForm({ phone, demoCode, purpose, nextPath }: VerifyPhoneFormProps) {
   const router = useRouter();
+  const [step, setStep] = useState<Step>("code");
   const [code, setCode] = useState("");
+  const [name, setName] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isResending, setIsResending] = useState(false);
@@ -20,7 +24,7 @@ export function VerifyPhoneForm({ phone, demoCode, nextPath }: VerifyPhoneFormPr
 
   const displayPhone = phone.replace(/^7(\d{3})(\d{3})(\d{2})(\d{2})$/, "+7 ($1) $2-$3-$4");
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleVerifyCode(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
     setIsSubmitting(true);
@@ -32,10 +36,15 @@ export function VerifyPhoneForm({ phone, demoCode, nextPath }: VerifyPhoneFormPr
         body: JSON.stringify({ phone, code }),
       });
 
-      const data = (await response.json()) as { ok?: boolean; error?: string };
+      const data = (await response.json()) as { ok?: boolean; needsName?: boolean; error?: string };
 
       if (!response.ok) {
         throw new Error(data.error ?? "Не удалось подтвердить номер.");
+      }
+
+      if (data.needsName) {
+        setStep("name");
+        return;
       }
 
       router.push(nextPath);
@@ -43,6 +52,35 @@ export function VerifyPhoneForm({ phone, demoCode, nextPath }: VerifyPhoneFormPr
     } catch (requestError) {
       setError(
         requestError instanceof Error ? requestError.message : "Не удалось подтвердить номер.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  async function handleCompleteName(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError(null);
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch("/api/auth/verify-phone", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone, code, name }),
+      });
+
+      const data = (await response.json()) as { ok?: boolean; error?: string };
+
+      if (!response.ok) {
+        throw new Error(data.error ?? "Не удалось создать аккаунт.");
+      }
+
+      router.push(nextPath);
+      router.refresh();
+    } catch (requestError) {
+      setError(
+        requestError instanceof Error ? requestError.message : "Не удалось создать аккаунт.",
       );
     } finally {
       setIsSubmitting(false);
@@ -57,7 +95,7 @@ export function VerifyPhoneForm({ phone, demoCode, nextPath }: VerifyPhoneFormPr
       const response = await fetch("/api/auth/sign-up/resend", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone }),
+        body: JSON.stringify({ phone, purpose }),
       });
 
       const data = (await response.json()) as { demoCode?: string; error?: string };
@@ -80,17 +118,66 @@ export function VerifyPhoneForm({ phone, demoCode, nextPath }: VerifyPhoneFormPr
     }
   }
 
+  // Step: enter name (sign-up only, after code verified)
+  if (step === "name") {
+    return (
+      <div className="customer-soft-card-strong mx-auto w-full px-5 py-8">
+        <div>
+          <p className="text-[13px] font-bold uppercase tracking-[0.18em] text-brand-600">
+            Jeffrey&apos;s Coffeeshop
+          </p>
+          <h2 className="mt-3 text-[38px] font-semibold leading-[0.96] tracking-tight text-jeffreys-graphite">
+            Как вас зовут?
+          </h2>
+          <p className="mt-3 text-sm leading-6 text-stone-500">
+            Номер <span className="font-semibold text-jeffreys-graphite">{displayPhone}</span> подтверждён.
+            Введите своё имя для завершения регистрации.
+          </p>
+        </div>
+
+        <form onSubmit={handleCompleteName} className="mt-8">
+          <label className="block">
+            <span className="text-sm font-medium text-stone-700">Имя</span>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="field-input"
+              placeholder="Например, Анна"
+              autoComplete="name"
+              autoFocus
+              required
+            />
+          </label>
+
+          {error ? (
+            <p className="mt-4 rounded-[24px] bg-red-50 p-4 text-sm text-red-700">{error}</p>
+          ) : null}
+
+          <button
+            type="submit"
+            disabled={isSubmitting || name.trim().length < 2}
+            className="btn-primary mt-7 w-full disabled:cursor-wait disabled:bg-stone-400"
+          >
+            {isSubmitting ? "Создаём аккаунт…" : "Готово"}
+          </button>
+        </form>
+      </div>
+    );
+  }
+
+  // Step: enter code
   return (
-    <div className="customer-soft-card-strong mx-auto w-full px-5 py-6">
+    <div className="customer-soft-card-strong mx-auto w-full px-5 py-8">
       <div>
         <p className="text-[13px] font-bold uppercase tracking-[0.18em] text-brand-600">
           Jeffrey&apos;s Coffeeshop
         </p>
-        <h2 className="mt-3 text-[30px] font-semibold leading-[0.98] tracking-tight text-jeffreys-graphite">
-          Подтвердите номер
+        <h2 className="mt-3 text-[38px] font-semibold leading-[0.96] tracking-tight text-jeffreys-graphite">
+          Код из SMS
         </h2>
         <p className="mt-3 text-sm leading-6 text-stone-500">
-          Код отправлен на номер{" "}
+          Отправили на{" "}
           <span className="font-semibold text-jeffreys-graphite">{displayPhone}</span>
         </p>
       </div>
@@ -109,7 +196,7 @@ export function VerifyPhoneForm({ phone, demoCode, nextPath }: VerifyPhoneFormPr
         </div>
       ) : null}
 
-      <form onSubmit={handleSubmit} className="mt-5">
+      <form onSubmit={handleVerifyCode} className="mt-5">
         <label className="block">
           <span className="text-sm font-medium text-stone-700">Код из SMS</span>
           <input
@@ -139,22 +226,14 @@ export function VerifyPhoneForm({ phone, demoCode, nextPath }: VerifyPhoneFormPr
         </button>
       </form>
 
-      <div className="mt-4 flex items-center justify-between gap-4">
-        <button
-          type="button"
-          onClick={handleResend}
-          disabled={isResending}
-          className="text-[15px] font-medium text-brand-600 disabled:opacity-50"
-        >
-          {isResending ? "Отправляем…" : "Отправить ещё раз"}
-        </button>
-        <Link
-          href="/sign-up"
-          className="text-[15px] text-stone-500 underline decoration-stone-300 underline-offset-4"
-        >
-          Назад
-        </Link>
-      </div>
+      <button
+        type="button"
+        onClick={handleResend}
+        disabled={isResending}
+        className="mt-4 text-[15px] font-medium text-brand-600 disabled:opacity-50"
+      >
+        {isResending ? "Отправляем…" : "Отправить ещё раз"}
+      </button>
     </div>
   );
 }

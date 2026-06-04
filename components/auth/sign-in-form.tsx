@@ -13,7 +13,6 @@ type SignInFormProps = {
 export function SignInForm({ nextPath }: SignInFormProps) {
   const router = useRouter();
   const [phoneDigits, setPhoneDigits] = useState("");
-  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -26,17 +25,18 @@ export function SignInForm({ nextPath }: SignInFormProps) {
       const response = await fetch("/api/auth/sign-in", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone: `7${phoneDigits}`, password }),
+        body: JSON.stringify({ phone: `7${phoneDigits}` }),
       });
 
-      const data = (await response.json()) as { error?: string };
+      const data = (await response.json()) as { phone?: string; demoCode?: string; error?: string };
 
       if (!response.ok) {
         throw new Error(data.error ?? "Не удалось войти.");
       }
 
-      router.push(nextPath);
-      router.refresh();
+      router.push(
+        `/verify-phone?phone=${encodeURIComponent(data.phone ?? "")}&demoCode=${encodeURIComponent(data.demoCode ?? "")}&purpose=LOGIN&next=${encodeURIComponent(nextPath)}`,
+      );
     } catch (requestError) {
       setError(
         requestError instanceof Error ? requestError.message : "Не удалось войти.",
@@ -60,26 +60,14 @@ export function SignInForm({ nextPath }: SignInFormProps) {
         </h2>
       </div>
 
-      <div className="mt-8 space-y-4">
+      <div className="mt-8">
         <label className="block">
           <span className="text-sm font-medium text-stone-700">Телефон</span>
           <PhoneInput
             value={phoneDigits}
             onChange={setPhoneDigits}
             className="field-input"
-          />
-        </label>
-
-        <label className="block">
-          <span className="text-sm font-medium text-stone-700">Пароль</span>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="field-input"
-            placeholder="Ваш пароль"
-            autoComplete="current-password"
-            required
+            autoFocus
           />
         </label>
       </div>
@@ -93,26 +81,18 @@ export function SignInForm({ nextPath }: SignInFormProps) {
         disabled={isSubmitting || phoneDigits.length < 10}
         className="btn-primary mt-7 w-full disabled:cursor-wait disabled:bg-stone-400"
       >
-        {isSubmitting ? "Входим…" : "Войти"}
+        {isSubmitting ? "Отправляем…" : "Получить код"}
       </button>
 
-      <div className="mt-5 flex items-center justify-between gap-4">
-        <p className="text-[15px] leading-none text-stone-600">
-          Нет аккаунта?{" "}
-          <Link
-            href={`/sign-up?next=${encodeURIComponent(nextPath)}`}
-            className="font-semibold text-brand-600 underline decoration-brand-200 underline-offset-4"
-          >
-            Создать
-          </Link>
-        </p>
+      <p className="mt-5 text-sm text-stone-600">
+        Нет аккаунта?{" "}
         <Link
-          href={`/forgot-password`}
-          className="text-[15px] font-medium text-stone-500 underline decoration-stone-300 underline-offset-4"
+          href={`/sign-up?next=${encodeURIComponent(nextPath)}`}
+          className="font-semibold text-brand-600 underline decoration-brand-200 underline-offset-4"
         >
-          Забыл пароль
+          Создать
         </Link>
-      </div>
+      </p>
     </form>
   );
 }

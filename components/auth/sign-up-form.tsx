@@ -12,9 +12,7 @@ type SignUpFormProps = {
 
 export function SignUpForm({ nextPath }: SignUpFormProps) {
   const router = useRouter();
-  const [name, setName] = useState("");
   const [phoneDigits, setPhoneDigits] = useState("");
-  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -27,25 +25,21 @@ export function SignUpForm({ nextPath }: SignUpFormProps) {
       const response = await fetch("/api/auth/sign-up", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name,
-          phone: `7${phoneDigits}`,
-          password,
-        }),
+        body: JSON.stringify({ phone: `7${phoneDigits}` }),
       });
 
       const data = (await response.json()) as { phone?: string; demoCode?: string; error?: string };
 
       if (!response.ok) {
-        throw new Error(data.error ?? "Не удалось создать аккаунт.");
+        throw new Error(data.error ?? "Не удалось отправить код.");
       }
 
       router.push(
-        `/verify-phone?phone=${encodeURIComponent(data.phone ?? "")}&code=${encodeURIComponent(data.demoCode ?? "")}&next=${encodeURIComponent(nextPath)}`,
+        `/verify-phone?phone=${encodeURIComponent(data.phone ?? "")}&demoCode=${encodeURIComponent(data.demoCode ?? "")}&purpose=VERIFY&next=${encodeURIComponent(nextPath)}`,
       );
     } catch (requestError) {
       setError(
-        requestError instanceof Error ? requestError.message : "Не удалось создать аккаунт.",
+        requestError instanceof Error ? requestError.message : "Не удалось отправить код.",
       );
     } finally {
       setIsSubmitting(false);
@@ -55,53 +49,28 @@ export function SignUpForm({ nextPath }: SignUpFormProps) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="customer-soft-card-strong mx-auto w-full px-5 py-6"
+      className="customer-soft-card-strong mx-auto w-full px-5 py-8"
     >
       <div>
         <p className="text-[13px] font-bold uppercase tracking-[0.18em] text-brand-600">
           Jeffrey&apos;s Coffeeshop
         </p>
-        <h2 className="mt-3 text-[30px] font-semibold leading-[0.98] tracking-tight text-jeffreys-graphite">
+        <h2 className="mt-3 text-[38px] font-semibold leading-[0.96] tracking-tight text-jeffreys-graphite">
           Создать аккаунт
         </h2>
         <p className="mt-3 text-sm leading-6 text-stone-500">
-          Нужен, чтобы сохранять историю заказов и корзину между сессиями.
+          Введите номер телефона — отправим код для подтверждения.
         </p>
       </div>
 
-      <div className="mt-6 space-y-4">
-        <label className="block">
-          <span className="text-sm font-medium text-stone-700">Имя</span>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="field-input"
-            placeholder="Например, Анна"
-            autoComplete="name"
-            required
-          />
-        </label>
-
+      <div className="mt-8">
         <label className="block">
           <span className="text-sm font-medium text-stone-700">Телефон</span>
           <PhoneInput
             value={phoneDigits}
             onChange={setPhoneDigits}
             className="field-input"
-          />
-        </label>
-
-        <label className="block">
-          <span className="text-sm font-medium text-stone-700">Пароль</span>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="field-input"
-            placeholder="Минимум 6 символов"
-            autoComplete="new-password"
-            required
+            autoFocus
           />
         </label>
       </div>
@@ -113,12 +82,12 @@ export function SignUpForm({ nextPath }: SignUpFormProps) {
       <button
         type="submit"
         disabled={isSubmitting || phoneDigits.length < 10}
-        className="btn-primary mt-6 w-full disabled:cursor-wait disabled:bg-stone-400"
+        className="btn-primary mt-7 w-full disabled:cursor-wait disabled:bg-stone-400"
       >
-        {isSubmitting ? "Создаём…" : "Продолжить"}
+        {isSubmitting ? "Отправляем…" : "Получить код"}
       </button>
 
-      <p className="mt-4 text-sm text-stone-600">
+      <p className="mt-5 text-sm text-stone-600">
         Уже есть аккаунт?{" "}
         <Link
           href={`/sign-in?next=${encodeURIComponent(nextPath)}`}

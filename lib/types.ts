@@ -15,6 +15,7 @@ export type ViewerSummary = {
   phone: string;
   email: string | null;
   phoneVerified: boolean;
+  bonusBalance: number;
   birthDate: string | null;
   gender: string | null;
 };
@@ -79,6 +80,7 @@ export type OrderDetails = {
   confirmedAt: string;
   items: OrderItemSummary[];
   ordersAhead: number;
+  itemsAhead: number;
   canCancel: boolean;
 };
 
